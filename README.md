@@ -1,4 +1,4 @@
-# Repositorio de {Tu usuario de GitHub}
+# Repositorio de Enzo Vivallo
 
 Este es el repositorio que utilizarás durante el resto del curso. Tanto profesores, ayudantes y bots tenemos acceso a este y podremos ver todos los cambios que hagas en tu código. **Es tu deber darle un buen uso y solo con fines académicos.**
 
