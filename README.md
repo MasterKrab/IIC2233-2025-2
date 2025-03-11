@@ -10,7 +10,7 @@ Todo el proceso de recolección de tareas y actividades está automatizado, por 
 
 | Nombre | Mail UC |
 | :-: | :-: |
-| {Tu nombre} | {Tu correo UC} |
+| Enzo Vivallo | enzovivallo@estudiante.uc.cl |
 
 ## Sobre las entregas
 
