@@ -6,7 +6,7 @@ from utils.pretty_print import print_usuario, print_items, print_canasta, print_
 def cargar_items() -> list:
     items = []
 
-    path = Path("./utils/items.dcc")
+    path = Path("utils", "items.dcc")
 
     with path.open(mode="r") as file:
         for line in file:
