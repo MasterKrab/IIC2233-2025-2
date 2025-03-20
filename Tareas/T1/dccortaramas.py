@@ -50,24 +50,70 @@ class Bonsai:
             file.write(visualization)
 
 
+def find_node_index(bonsai: Bonsai, id: int) -> int | None:
+    for i in range(len(bonsai.estructura)):
+        if bonsai.estructura[i][0] == id:
+            return i
+
+    return None
+
+
+def find_node(bonsai: Bonsai, id: int) -> list | None:
+    index = find_node_index(bonsai, id)
+
+    if index is None:
+        return None
+
+    return bonsai.estructura[index]
+
+
 class DCCortaRamas:
     def modificar_nodo(self, bonsai: Bonsai, identificador: str) -> str:
-        for node in bonsai.estructura:
-            # not target node
-            if node[0] != identificador:
+        node = find_node(bonsai, identificador)
+
+        if node is None:
+            return NOT_FOUND
+
+        if not node[2]:
+            return NOT_ALLOWED
+
+        node[1] = not node[1]
+        return DONE
+
+    def quitar_nodo(self, bonsai: Bonsai, identificador: str) -> str:
+        to_search = [identificador]
+        nodes_to_remove = []
+
+        while to_search:
+            node_id_to_remove = to_search.pop()
+
+            if node_id_to_remove == "0":
                 continue
 
-            # Can't edit
+            nodes_to_remove.append(node_id_to_remove)
+
+            node = find_node(bonsai, node_id_to_remove)
+
+            if node is None:
+                return NOT_FOUND
+
             if not node[2]:
                 return NOT_ALLOWED
 
-            node[1] = not node[1]
-            return DONE
+            to_search.extend(node[3])
 
-        return NOT_FOUND
+        # Remove nodes
+        for node_id in nodes_to_remove:
+            index = find_node(bonsai, node_id)
+            bonsai.estructura.remove(index)
 
-    def quitar_nodo(self, bonsai: Bonsai, identificador: str) -> str:
-        pass
+        # Remove nodes from child lists
+        for node in bonsai.estructura:
+            for i in range(2):
+                if node[3][i] in nodes_to_remove:
+                    node[3][i] = "0"
+
+        return DONE
 
     def es_simetrico(self, bonsai: Bonsai) -> bool:
         pass
