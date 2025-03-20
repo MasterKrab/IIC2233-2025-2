@@ -49,27 +49,35 @@ class Bonsai:
         with path.open(mode="w+", encoding="utf-8") as file:
             file.write(visualization)
 
+    def find_node_index(self, id: int) -> int | None:
+        for i in range(len(self.estructura)):
+            if self.estructura[i][0] == id:
+                return i
 
-def find_node_index(bonsai: Bonsai, id: int) -> int | None:
-    for i in range(len(bonsai.estructura)):
-        if bonsai.estructura[i][0] == id:
-            return i
-
-    return None
-
-
-def find_node(bonsai: Bonsai, id: int) -> list | None:
-    index = find_node_index(bonsai, id)
-
-    if index is None:
         return None
 
-    return bonsai.estructura[index]
+    def find_node(self, id: int) -> list | None:
+        index = self.find_node_index(id)
+
+        if index is None:
+            return None
+
+        return self.estructura[index]
+
+    def remove_node(self, id: int) -> None:
+        index = self.find_node_index(id)
+        self.estructura.pop(index)
+
+        for node in self.estructura:
+            for i in range(2):
+                if node[3][i] == id:
+                    node[3][i] = "0"
+                    break
 
 
 class DCCortaRamas:
     def modificar_nodo(self, bonsai: Bonsai, identificador: str) -> str:
-        node = find_node(bonsai, identificador)
+        node = bonsai.find_node(identificador)
 
         if node is None:
             return NOT_FOUND
@@ -92,7 +100,7 @@ class DCCortaRamas:
 
             nodes_to_remove.add(node_id_to_remove)
 
-            node = find_node(bonsai, node_id_to_remove)
+            node = bonsai.find_node(node_id_to_remove)
 
             if node is None:
                 return NOT_FOUND
@@ -102,16 +110,8 @@ class DCCortaRamas:
 
             to_search.extend(node[3])
 
-        # Remove nodes
         for node_id in nodes_to_remove:
-            index = find_node(bonsai, node_id)
-            bonsai.estructura.remove(index)
-
-        # Remove nodes from child lists
-        for node in bonsai.estructura:
-            for i in range(2):
-                if node[3][i] in nodes_to_remove:
-                    node[3][i] = "0"
+            bonsai.remove_node(node_id)
 
         return DONE
 
@@ -120,6 +120,7 @@ class DCCortaRamas:
 
     def emparejar_bonsai(self, bonsai: Bonsai) -> list:
         pass
+        # Remove nodes
 
     def emparejar_bonsai_ahorro(self, bonsai: Bonsai) -> list:
         pass
