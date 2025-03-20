@@ -116,7 +116,26 @@ class DCCortaRamas:
         return DONE
 
     def es_simetrico(self, bonsai: Bonsai) -> bool:
-        pass
+        def search(node: list | None, swap: bool):
+            if node is None:
+                return ()
+
+            left, right = node[3]
+
+            if swap:
+                left, right = right, left
+
+            left_child = bonsai.find_node(left)
+            right_right = bonsai.find_node(right)
+
+            return (node[1], search(left_child, swap), search(right_right, swap))
+
+        root = bonsai.estructura[0]
+
+        left_child = bonsai.find_node(root[3][0])
+        right_child = bonsai.find_node(root[3][1])
+
+        return search(left_child, True) == search(right_child, False)
 
     def emparejar_bonsai(self, bonsai: Bonsai) -> list:
         pass
