@@ -1,7 +1,8 @@
 import utilidades
 from pathlib import Path
 
-FILES_FOLDER = "data"
+READ_FOLDER = "data"
+WRITE_FOLDER = "visualizaciones"
 
 
 class Bonsai:
@@ -14,7 +15,7 @@ class Bonsai:
         self.estructura = estructura
 
     def cargar_bonsai_de_archivo(self, carpeta: str, archivo: str) -> None:
-        path = Path(FILES_FOLDER, carpeta, archivo)
+        path = Path(READ_FOLDER, carpeta, archivo)
 
         with path.open(mode="r", encoding="utf-8") as file:
             for line in file:
@@ -29,7 +30,18 @@ class Bonsai:
     def visualizar_bonsai(
         self, orientacion: str, emojis: bool, guardar_archivo: bool
     ) -> None:
-        pass
+        visualization = utilidades.visualizar_bonsai(
+            self.estructura, orientacion, emojis, guardar_archivo
+        )
+
+        # Nothing to save, visualization is None
+        if not guardar_archivo:
+            return
+
+        path = Path(WRITE_FOLDER, f"{self.identificador}.txt")
+
+        with path.open(mode="w+", encoding="utf-8") as file:
+            file.write(visualization)
 
 
 class DCCortaRamas:
