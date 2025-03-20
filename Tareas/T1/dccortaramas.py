@@ -82,7 +82,7 @@ class DCCortaRamas:
 
     def quitar_nodo(self, bonsai: Bonsai, identificador: str) -> str:
         to_search = [identificador]
-        nodes_to_remove = []
+        nodes_to_remove = set()
 
         while to_search:
             node_id_to_remove = to_search.pop()
@@ -90,7 +90,7 @@ class DCCortaRamas:
             if node_id_to_remove == "0":
                 continue
 
-            nodes_to_remove.append(node_id_to_remove)
+            nodes_to_remove.add(node_id_to_remove)
 
             node = find_node(bonsai, node_id_to_remove)
 
