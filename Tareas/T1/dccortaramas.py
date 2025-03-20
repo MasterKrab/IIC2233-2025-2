@@ -1,8 +1,14 @@
 import utilidades
 from pathlib import Path
 
+# Files constants
 READ_FOLDER = "data"
 WRITE_FOLDER = "visualizaciones"
+
+# Messages
+NOT_ALLOWED = "No permitido"
+DONE = "Realizado"
+NOT_FOUND = "No encontrado"
 
 
 class Bonsai:
@@ -46,7 +52,19 @@ class Bonsai:
 
 class DCCortaRamas:
     def modificar_nodo(self, bonsai: Bonsai, identificador: str) -> str:
-        pass
+        for node in bonsai.estructura:
+            # not target node
+            if node[0] != identificador:
+                continue
+
+            # Can't edit
+            if not node[2]:
+                return NOT_ALLOWED
+
+            node[1] = not node[1]
+            return DONE
+
+        return NOT_FOUND
 
     def quitar_nodo(self, bonsai: Bonsai, identificador: str) -> str:
         pass
