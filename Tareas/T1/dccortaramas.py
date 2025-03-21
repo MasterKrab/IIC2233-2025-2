@@ -10,6 +10,10 @@ NOT_ALLOWED = "No permitido"
 DONE = "Realizado"
 NOT_FOUND = "No encontrado"
 
+# Actions
+MODIFY_FLOWER = "Modificar Flor"
+REMOVE_NODE = "Quitar Nodo"
+
 
 class Bonsai:
     def __init__(
@@ -73,6 +77,14 @@ class Bonsai:
                 if node[3][i] == id:
                     node[3][i] = "0"
                     break
+
+    def copy(self):
+        tree = Bonsai(self.identificador, self.costo_corte, self.costo_flor, [])
+
+        for *data, childs in self.estructura:
+            tree.estructura.append([*data, childs.copy()])
+
+        return tree
 
 
 class DCCortaRamas:
@@ -145,4 +157,23 @@ class DCCortaRamas:
         pass
 
     def comprobar_solucion(self, bonsai: Bonsai, instrucciones: list) -> list:
-        pass
+        copy = bonsai.copy()
+        cost = 0
+
+        for type, id in instrucciones:
+            if type == MODIFY_FLOWER:
+                if self.modificar_nodo(copy, id) != DONE:
+                    return [False, 0]
+
+                cost += copy.costo_flor
+
+            elif type == REMOVE_NODE:
+                if self.quitar_nodo(copy, id) != DONE:
+                    return [False, 0]
+
+                cost += copy.costo_corte
+
+        if not self.es_simetrico(copy):
+            return [False, 0]
+
+        return [True, cost]
