@@ -152,22 +152,22 @@ class DCCortaRamas:
     def emparejar_bonsai(self, bonsai: Bonsai) -> list:
         stack = [(bonsai.copy(), set(), [])]
 
-        bonsai.visualizar_bonsai("Vertical", True, False)
-
         while stack:
             tree, used, logs = stack.pop(0)
 
             if self.es_simetrico(tree):
-                tree.visualizar_bonsai("Vertical", True, False)
-
                 return [True, logs]
 
             for node in tree.estructura:
                 if not node[2] or node[0] in used:
                     continue
                 to_remove = tree.copy()
+                to_modify = tree.copy()
 
-                if self.quitar_nodo(to_remove, node[0]) == DONE:
+                can_remove = self.quitar_nodo(to_remove, node[0]) == DONE
+                can_modify = self.modificar_nodo(to_modify, node[0]) == DONE
+
+                if can_remove:
                     stack.append(
                         (
                             to_remove,
@@ -176,11 +176,13 @@ class DCCortaRamas:
                         )
                     )
 
-                to_modify = tree.copy()
-
-                if self.modificar_nodo(to_modify, node[0]) == DONE:
+                if can_modify:
                     stack.append(
-                        (to_modify, used | {node[0]}, [*logs, [MODIFY_FLOWER, node[0]]])
+                        (
+                            to_modify,
+                            used | {node[0]},
+                            [*logs, [MODIFY_FLOWER, node[0]]],
+                        )
                     )
 
         return [False, []]
