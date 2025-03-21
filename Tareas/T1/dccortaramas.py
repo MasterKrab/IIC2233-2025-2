@@ -82,7 +82,7 @@ class Bonsai:
         tree = Bonsai(self.identificador, self.costo_corte, self.costo_flor, [])
 
         for *data, childs in self.estructura:
-            tree.estructura.append([*data, childs.copy()])
+            tree.estructura.append([*data, [*childs]])
 
         return tree
 
@@ -150,8 +150,40 @@ class DCCortaRamas:
         return search(left_child, True) == search(right_child, False)
 
     def emparejar_bonsai(self, bonsai: Bonsai) -> list:
-        pass
-        # Remove nodes
+        stack = [(bonsai.copy(), set(), [])]
+
+        bonsai.visualizar_bonsai("Vertical", True, False)
+
+        while stack:
+            tree, used, logs = stack.pop(0)
+
+            if self.es_simetrico(tree):
+                tree.visualizar_bonsai("Vertical", True, False)
+
+                return [True, logs]
+
+            for node in tree.estructura:
+                if not node[2] or node[0] in used:
+                    continue
+                to_remove = tree.copy()
+
+                if self.quitar_nodo(to_remove, node[0]) == DONE:
+                    stack.append(
+                        (
+                            to_remove,
+                            used | {node[0]},
+                            [*logs, [REMOVE_NODE, node[0]]],
+                        )
+                    )
+
+                to_modify = tree.copy()
+
+                if self.modificar_nodo(to_modify, node[0]) == DONE:
+                    stack.append(
+                        (to_modify, used | {node[0]}, [*logs, [MODIFY_FLOWER, node[0]]])
+                    )
+
+        return [False, []]
 
     def emparejar_bonsai_ahorro(self, bonsai: Bonsai) -> list:
         pass
