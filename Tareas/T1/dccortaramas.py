@@ -163,13 +163,13 @@ class DCCortaRamas:
                 return [0, []]
 
             if node_a is None and node_b is not None:
-                if not self.can_remove_node(copy, node_b[0]):
+                if not self.can_remove_node(bonsai.copy(), node_b[0]):
                     return [upper_bound, []]
 
                 return [bonsai.costo_corte, [[REMOVE_NODE, node_b[0]]]]
 
             if node_b is None and node_a is not None:
-                if not self.can_remove_node(copy, node_a[0]):
+                if not self.can_remove_node(bonsai.copy(), node_a[0]):
                     return [upper_bound, []]
 
                 return [bonsai.costo_corte, [[REMOVE_NODE, node_a[0]]]]
