@@ -142,11 +142,12 @@ class DCCortaRamas:
         return DONE
 
     def es_simetrico(self, bonsai: Bonsai) -> bool:
-        solution = self.balance(bonsai)
-
-        cost = solution[0]
+        cost = self.balance(bonsai)[0]
 
         return cost == 0
+
+    def can_remove_node(self, bonsai: Bonsai, node_id: str) -> bool:
+        return self.quitar_nodo(bonsai.copy(), node_id) == DONE
 
     def upper_bound_to_balance(self, bonsai: Bonsai) -> int:
         return max(bonsai.costo_corte, bonsai.costo_flor) * len(bonsai.estructura)
@@ -162,19 +163,13 @@ class DCCortaRamas:
                 return [0, []]
 
             if node_a is None and node_b is not None:
-                copy = bonsai.copy()
-                can_remove = self.quitar_nodo(copy, node_b[0]) == DONE
-
-                if not can_remove:
+                if not self.can_remove_node(copy, node_b[0]):
                     return [upper_bound, []]
 
                 return [bonsai.costo_corte, [[REMOVE_NODE, node_b[0]]]]
 
             if node_b is None and node_a is not None:
-                copy = bonsai.copy()
-                can_remove = self.quitar_nodo(copy, node_a[0]) == DONE
-
-                if not can_remove:
+                if not self.can_remove_node(copy, node_a[0]):
                     return [upper_bound, []]
 
                 return [bonsai.costo_corte, [[REMOVE_NODE, node_a[0]]]]
@@ -215,9 +210,8 @@ class DCCortaRamas:
                     best_solution = min(best_solution, solution)
 
             copy = bonsai.copy()
-            can_remove = (
-                self.quitar_nodo(copy, node_a[0]) == DONE
-                and self.quitar_nodo(copy, node_b[0]) == DONE
+            can_remove = self.can_remove_node(copy, node_a[0]) and self.can_remove_node(
+                copy, node_b[0]
             )
 
             if can_remove:
