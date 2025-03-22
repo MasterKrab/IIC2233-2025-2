@@ -150,14 +150,7 @@ class DCCortaRamas:
     def can_remove_node(self, bonsai: Bonsai, node_id: str) -> bool:
         return self.quitar_nodo(bonsai.copy(), node_id) == DONE
 
-    def upper_bound_to_balance(self, bonsai: Bonsai) -> int:
-        large = max(len(bonsai.estructura), 1000)
-        max_cost = max(bonsai.costo_corte, bonsai.costo_flor)
-
-        return max_cost * large + 1000
-
     def balance(self, bonsai: Bonsai) -> list:
-        upper_bound = self.upper_bound_to_balance(bonsai)
 
         def merge_solutions(a: list, b: list):
             return [a[0] + b[0], [*a[1], *b[1]]]
@@ -168,13 +161,13 @@ class DCCortaRamas:
 
             if node_a is None and node_b is not None:
                 if not self.can_remove_node(bonsai.copy(), node_b[0]):
-                    return [upper_bound, []]
+                    return [float("inf"), []]
 
                 return [bonsai.costo_corte, [[REMOVE_NODE, node_b[0]]]]
 
             if node_b is None and node_a is not None:
                 if not self.can_remove_node(bonsai.copy(), node_a[0]):
-                    return [upper_bound, []]
+                    return [float("inf"), []]
 
                 return [bonsai.costo_corte, [[REMOVE_NODE, node_a[0]]]]
 
@@ -187,7 +180,7 @@ class DCCortaRamas:
             left_child_b = bonsai.find_node(left_b)
             right_child_b = bonsai.find_node(right_b)
 
-            best_solution = [upper_bound, []]
+            best_solution = [float("inf"), []]
 
             subtree_solution = merge_solutions(
                 search(left_child_a, right_child_b), search(right_child_a, left_child_b)
@@ -238,7 +231,7 @@ class DCCortaRamas:
     def emparejar_bonsai(self, bonsai: Bonsai) -> list:
         cost, instrucctions = self.balance(bonsai)
 
-        if cost >= self.upper_bound_to_balance(bonsai):
+        if cost == float("inf"):
             return [False, []]
 
         return [True, instrucctions]
@@ -275,7 +268,7 @@ class DCCortaRamas:
     def emparejar_bonsai_ahorro(self, bonsai: Bonsai) -> list:
         cost, instrucctions = self.balance(bonsai)
 
-        if cost >= self.upper_bound_to_balance(bonsai):
+        if cost == float("inf"):
             return [False, []]
 
         return [True, cost, instrucctions]
