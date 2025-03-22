@@ -150,7 +150,9 @@ class DCCortaRamas:
         return self.quitar_nodo(bonsai.copy(), node_id) == DONE
 
     def upper_bound_to_balance(self, bonsai: Bonsai) -> int:
-        return max(1, max(bonsai.costo_corte, bonsai.costo_flor) * len(bonsai.estructura))
+        return max(
+            1, max(bonsai.costo_corte, bonsai.costo_flor) * len(bonsai.estructura)
+        )
 
     def balance(self, bonsai: Bonsai) -> list:
         upper_bound = self.upper_bound_to_balance(bonsai)
@@ -234,13 +236,32 @@ class DCCortaRamas:
     def emparejar_bonsai(self, bonsai: Bonsai) -> list:
         cost, instrucctions = self.balance(bonsai)
 
+        self.apply_solution(bonsai, instrucctions)
+
         if cost >= self.upper_bound_to_balance(bonsai):
             return [False, []]
 
         return [True, instrucctions]
 
+    def apply_solution(self, bonsai: Bonsai, instrucciones: list) -> str:
+        for type, id in instrucciones:
+            if type == MODIFY_FLOWER:
+                if self.modificar_nodo(bonsai, id) != DONE:
+                    return NOT_ALLOWED
+
+            elif type == REMOVE_NODE:
+                if self.quitar_nodo(bonsai, id) != DONE:
+                    return NOT_ALLOWED
+
+        if not self.es_simetrico(bonsai):
+            return NOT_ALLOWED
+
+        return DONE
+
     def emparejar_bonsai_ahorro(self, bonsai: Bonsai) -> list:
         cost, instrucctions = self.balance(bonsai)
+
+        self.apply_solution(bonsai, instrucctions)
 
         if cost >= self.upper_bound_to_balance(bonsai):
             return [False, []]
@@ -248,24 +269,7 @@ class DCCortaRamas:
         return [True, cost, instrucctions]
 
     def comprobar_solucion(self, bonsai: Bonsai, instrucciones: list) -> list:
-        copy = bonsai.copy()
+        if self.apply_solution(bonsai.copy(), instrucciones) == DONE:
+            return [True, 0]
 
-        cost = 0
-
-        for type, id in instrucciones:
-            if type == MODIFY_FLOWER:
-                if self.modificar_nodo(copy, id) != DONE:
-                    return [False, 0]
-
-                cost += copy.costo_flor
-
-            elif type == REMOVE_NODE:
-                if self.quitar_nodo(copy, id) != DONE:
-                    return [False, 0]
-
-                cost += copy.costo_corte
-
-        if not self.es_simetrico(copy):
-            return [False, 0]
-
-        return [True, cost]
+        return [False, 0]
