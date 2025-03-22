@@ -150,7 +150,7 @@ class DCCortaRamas:
         return self.quitar_nodo(bonsai.copy(), node_id) == DONE
 
     def upper_bound_to_balance(self, bonsai: Bonsai) -> int:
-        return max(bonsai.costo_corte, bonsai.costo_flor) * len(bonsai.estructura)
+        return max(1, max(bonsai.costo_corte, bonsai.costo_flor) * len(bonsai.estructura))
 
     def balance(self, bonsai: Bonsai) -> list:
         upper_bound = self.upper_bound_to_balance(bonsai)
