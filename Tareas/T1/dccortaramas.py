@@ -11,6 +11,7 @@ WRITE_FOLDER = "visualizaciones"
 NOT_ALLOWED = "No permitido"
 DONE = "Realizado"
 NOT_FOUND = "No encontrado"
+FAILS = "Falla"
 
 # Actions
 MODIFY_FLOWER = "Modificar Flor"
@@ -150,7 +151,10 @@ class DCCortaRamas:
         return self.quitar_nodo(bonsai.copy(), node_id) == DONE
 
     def upper_bound_to_balance(self, bonsai: Bonsai) -> int:
-        return max(bonsai.costo_corte, bonsai.costo_flor, 10) * len(bonsai.estructura)
+        large = max(len(bonsai.estructura), 1000)
+        max_cost = max(bonsai.costo_corte, bonsai.costo_flor)
+
+        return max_cost * large + 1000
 
     def balance(self, bonsai: Bonsai) -> list:
         upper_bound = self.upper_bound_to_balance(bonsai)
@@ -234,40 +238,50 @@ class DCCortaRamas:
     def emparejar_bonsai(self, bonsai: Bonsai) -> list:
         cost, instrucctions = self.balance(bonsai)
 
-        self.apply_solution(bonsai, instrucctions)
-
-        if cost > self.upper_bound_to_balance(bonsai):
+        if cost >= self.upper_bound_to_balance(bonsai):
             return [False, []]
 
         return [True, instrucctions]
 
-    def apply_solution(self, bonsai: Bonsai, instrucciones: list) -> str:
+    def calculate_cost(self, bonsai: Bonsai, instrucciones: list) -> int:
+        cost = 0
+
+        for instruccion in instrucciones:
+            type = instruccion[0]
+
+            if type == MODIFY_FLOWER:
+                cost += bonsai.costo_flor
+
+            elif type == REMOVE_NODE:
+                cost += bonsai.costo_corte
+
+        return cost
+
+    def apply_solution(self, bonsai: Bonsai, instrucciones: list) -> bool:
         for type, id in instrucciones:
             if type == MODIFY_FLOWER:
                 if self.modificar_nodo(bonsai, id) != DONE:
-                    return NOT_ALLOWED
+                    return FAILS
 
             elif type == REMOVE_NODE:
                 if self.quitar_nodo(bonsai, id) != DONE:
-                    return NOT_ALLOWED
+                    return FAILS
 
         if not self.es_simetrico(bonsai):
-            return NOT_ALLOWED
+            return FAILS
 
         return DONE
 
     def emparejar_bonsai_ahorro(self, bonsai: Bonsai) -> list:
         cost, instrucctions = self.balance(bonsai)
 
-        self.apply_solution(bonsai, instrucctions)
-
-        if cost > self.upper_bound_to_balance(bonsai):
+        if cost >= self.upper_bound_to_balance(bonsai):
             return [False, []]
 
         return [True, cost, instrucctions]
 
     def comprobar_solucion(self, bonsai: Bonsai, instrucciones: list) -> list:
         if self.apply_solution(bonsai.copy(), instrucciones) == DONE:
-            return [True, 0]
+            return [True, self.calculate_cost(bonsai, instrucciones)]
 
         return [False, 0]
