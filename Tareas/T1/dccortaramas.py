@@ -19,6 +19,8 @@ REMOVE_NODE = "Quitar Nodo"
 
 
 class Bonsai:
+    node_type = list[str, bool, bool, list[str, str]]
+
     def __init__(
         self, identificador: str, costo_corte: int, costo_flor: int, estructura: list
     ) -> None:
@@ -65,14 +67,14 @@ class Bonsai:
 
         return None
 
-    def find_node(self, id: str) -> list | None:
+    def find_node(self, id: str) -> node_type | None:
         for node in self.estructura:
             if node[0] == id:
                 return node
 
         return None
 
-    def find_parent(self, id: str) -> list | None:
+    def find_parent(self, id: str) -> node_type | None:
         for node in self.estructura:
             if id in node[3]:
                 return node
@@ -150,12 +152,11 @@ class DCCortaRamas:
     def can_remove_node(self, bonsai: Bonsai, node_id: str) -> bool:
         return self.quitar_nodo(bonsai.copy(), node_id) == DONE
 
-    def balance(self, bonsai: Bonsai) -> list:
-
-        def merge_solutions(a: list, b: list):
+    def balance(self, bonsai: Bonsai) -> list[int, list[str, str]]:
+        def merge_solutions(a: list, b: list) -> list[int, list[str, str]]:
             return [a[0] + b[0], [*a[1], *b[1]]]
 
-        def search(node_a: list | None, node_b: list | None):
+        def search(node_a: Bonsai.node_type | None, node_b: Bonsai.node_type | None):
             if node_a is None and node_b is None:
                 return [0, []]
 
@@ -236,7 +237,7 @@ class DCCortaRamas:
 
         return [True, instrucctions]
 
-    def calculate_cost(self, bonsai: Bonsai, instrucciones: list) -> int:
+    def calculate_cost(self, bonsai: Bonsai, instrucciones: list[str, str]) -> int:
         cost = 0
 
         for instruccion in instrucciones:
@@ -250,7 +251,7 @@ class DCCortaRamas:
 
         return cost
 
-    def apply_solution(self, bonsai: Bonsai, instrucciones: list) -> bool:
+    def apply_solution(self, bonsai: Bonsai, instrucciones: list[str, str]) -> bool:
         for type, id in instrucciones:
             if type == MODIFY_FLOWER:
                 if self.modificar_nodo(bonsai, id) != DONE:
