@@ -19,8 +19,6 @@ REMOVE_NODE = "Quitar Nodo"
 
 
 class Bonsai:
-    node_type = list[str, bool, bool, list[str, str]]
-
     def __init__(
         self, identificador: str, costo_corte: int, costo_flor: int, estructura: list
     ) -> None:
@@ -67,14 +65,14 @@ class Bonsai:
 
         return None
 
-    def find_node(self, id: str) -> node_type | None:
+    def find_node(self, id: str) -> list | None:
         for node in self.estructura:
             if node[0] == id:
                 return node
 
         return None
 
-    def find_parent(self, id: str) -> node_type | None:
+    def find_parent(self, id: str) -> list | None:
         for node in self.estructura:
             if id in node[3]:
                 return node
@@ -145,18 +143,18 @@ class DCCortaRamas:
         return DONE
 
     def es_simetrico(self, bonsai: Bonsai) -> bool:
-        cost = self.balance(bonsai)[0]
+        cost, instrucctions = self.balance(bonsai)
 
-        return cost == 0
+        return cost == 0 and not instrucctions
 
     def can_remove_node(self, bonsai: Bonsai, node_id: str) -> bool:
         return self.quitar_nodo(bonsai.copy(), node_id) == DONE
 
-    def balance(self, bonsai: Bonsai) -> list[int, list[str, str]]:
-        def merge_solutions(a: list, b: list) -> list[int, list[str, str]]:
+    def balance(self, bonsai: Bonsai) -> list:
+        def merge_solutions(a: list, b: list):
             return [a[0] + b[0], [*a[1], *b[1]]]
 
-        def search(node_a: Bonsai.node_type | None, node_b: Bonsai.node_type | None):
+        def search(node_a: list | None, node_b: list | None):
             if node_a is None and node_b is None:
                 return [0, []]
 
@@ -237,7 +235,7 @@ class DCCortaRamas:
 
         return [True, instrucctions]
 
-    def calculate_cost(self, bonsai: Bonsai, instrucciones: list[str, str]) -> int:
+    def calculate_cost(self, bonsai: Bonsai, instrucciones: list) -> int:
         cost = 0
 
         for instruccion in instrucciones:
@@ -251,7 +249,7 @@ class DCCortaRamas:
 
         return cost
 
-    def apply_solution(self, bonsai: Bonsai, instrucciones: list[str, str]) -> bool:
+    def apply_solution(self, bonsai: Bonsai, instrucciones: list) -> bool:
         for type, id in instrucciones:
             if type == MODIFY_FLOWER:
                 if self.modificar_nodo(bonsai, id) != DONE:
