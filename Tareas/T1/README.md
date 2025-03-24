@@ -1,93 +1,85 @@
-# Tarea X: Nombre de la tarea :school_satchel:
-
-
-Un buen ```README.md``` puede marcar una gran diferencia en la facilidad con la que corregimos una tarea, y consecuentemente cómo funciona su programa, por lo en general, entre más ordenado y limpio sea éste, mejor será 
-
-Para nuestra suerte, GitHub soporta el formato [MarkDown](https://es.wikipedia.org/wiki/Markdown), el cual permite utilizar una amplia variedad de estilos de texto, tanto para resaltar cosas importantes como para separar ideas o poner código de manera ordenada ([pueden ver casi todas las funcionalidades que incluye aquí](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet))
-
-Un buen ```README.md``` no tiene por que ser muy extenso tampoco, hay que ser **concisos** (a menos que lo consideren necesario) pero **tampoco pueden** faltar cosas. Lo importante es que sea claro y limpio 
-
-**Dejar claro lo que NO pudieron implementar y lo que no funciona a la perfección. Esto puede sonar innecesario pero permite que el ayudante se enfoque en lo que sí podría subir su puntaje.**
+# Tarea 1: DCCortaRamas 🌳✂️
 
 ## Consideraciones generales :octocat:
 
-<Descripción de lo que hace y que **_no_** hace la tarea que entregaron junto
-con detalles de último minuto y consideraciones como por ejemplo cambiar algo
-en cierta línea del código o comentar una función>
+#### Automatización dccortaramas.py
 
-### Cosas implementadas y no implementadas :white_check_mark: :x:
+- ✅ `Bonsai.cargar_bonsai_de_archivo`
 
-* <Nombre item pauta<sub>1</sub>>: Hecha completa
-* <Nombre item pauta<sub>2</sub>>: Me faltó hacer <insertar qué cosa faltó>
-    * <Nombre subitem pauta<sub>2.1</sub>>: Hecha completa 
-    * <Nombre subitem pauta<sub>2.2</sub>>: Me faltó hacer <insertar qué cosa faltó>
-    * ...
-* <Nombre item pauta<sub>3</sub>>: Me faltó hacer <insertar qué cosa faltó>
-* ...
-* <Nombre item pauta<sub>n</sub>>: Me faltó hacer <insertar qué cosa faltó>
+- ✅ `Bonsai.visualizar_bonsai`
+
+- ✅ `DCCortaRamas.modificar_nodo`
+
+- ✅ `DCCortaRamas.quitar_nodo`
+
+- ✅ `DCCortaRamas.es_simetrico`
+
+- ✅ `DCCortaRamas.emparejar_bonsai`
+
+- ✅ `DCCortaRamas.emparejar_bonsai_ahorro`
+
+- ✅ `DCCortaRamas.comprobar_solucion`
+
+#### Menú
+
+- ✅ Consola
+
+- ✅ Menú de Inicio
+
+- ✅ Menú de Acciones
+
+#### Aspectos Generales
+
+- ✅ Modularización
+
+- ✅ PEP8
 
 ## Ejecución :computer:
-El módulo principal de la tarea a ejecutar es  ```archivo.py```. Además se debe crear los siguientes archivos y directorios adicionales:
-1. ```archivo.ext``` en ```ubicación```
-2. ```directorio``` en ```ubicación```
-3. ...
 
+El módulo principal de la tarea a ejecutar es `main.py`, que inicia un menu. Además se debe crear los siguientes archivos y directorios adicionales:
+
+1. Módulo `dccortaramas.py` en `./`
+2. Carpeta `data` en `./`
+
+**Para agregar archivos con los bonsái para la léctura del programa se deben colocar como un `.txt` siguiendo el formato de bonsái en una carpeta dentro de `data`.**
 
 ## Librerías :books:
+
 ### Librerías externas utilizadas
+
 La lista de librerías externas que utilicé fue la siguiente:
 
-1. ```librería_1```: ```función() / módulo```
-2. ```librería_2```: ```función() / módulo``` (debe instalarse)
-3. ...
+1. `pathlib`: `Path`
 
 ### Librerías propias
+
 Por otro lado, los módulos que fueron creados fueron los siguientes:
 
-1. ```librería_1```: Contiene a ```ClaseA```, ```ClaseB```, (ser general, tampoco es necesario especificar cada una)...
-2. ```librería_2```: Hecha para <insertar descripción **breve** de lo que hace o qué contiene>
-3. ...
+1. `dccortaramas`: Contiene a `Bonsai` y `DCCortaRamas`.
 
 ## Supuestos y consideraciones adicionales :thinking:
+
 Los supuestos que realicé durante la tarea son los siguientes:
 
-1. <Descripción/consideración 1 y justificación del por qué es válido/a> 
-2. <Descripción/consideración 2 y justificación del por qué es válido/a>
-3. ...
+1. El costo de cortar un nodo y modificar un nodo deben ser valores no negativos, debido que si son negativos estaríamos ganando, entonces no es un costo. Un costo igual a cero tiene sentido porque representaría que esa acción es gratis, considerar esto en el código no afecta al funcionamiento si es que no hay costo cero.
 
-PD: <una última consideración (de ser necesaria) o comentario hecho anteriormente que se quiera **recalcar**>
+2. En los tests públicos la cantidad de nodos es a lo más 50, entonces, se podría asumir que ese el tamaño máximo. Aunque, para asegurarse cree mis propios casos de prueba con árboles de hasta 1000 nodos y me aseguré que demoraran menos de 10 segundos en emparejar.
 
+## Implementación del programa
 
--------
+El programa fue implementado en el idioma inglés, conservando los nombres de los métodos ya entregados en el idioma español.
 
+A la clase `Bonsai` añadí los suguientes métodos explicados en el código mismo con comentarios:
 
+- `Bonsai.find_node_index`
+- `Bonsai.find_node`
+- `Bonsai.find_parent`
+- `Bonsai.remove_node`
+- `Bonsai.copy`
 
-**EXTRA:** si van a explicar qué hace específicamente un método, no lo coloquen en el README mismo. Pueden hacerlo directamente comentando el método en su archivo. Por ejemplo:
+A la clase `DCCortaRamas` añadí los suguientes métodos explicados en el código mismo comentarios:
 
-```python
-class Corrector:
-
-    def __init__(self):
-          pass
-
-    # Este método coloca un 6 en las tareas que recibe
-    def corregir(self, tarea):
-        tarea.nota  = 6
-        return tarea
-```
-
-Si quieren ser más formales, pueden usar alguna convención de documentación. Google tiene la suya, Python tiene otra y hay muchas más. La de Python es la [PEP287, conocida como reST](https://www.python.org/dev/peps/pep-0287/). Lo más básico es documentar así:
-
-```python
-def funcion(argumento):
-    """
-    Mi función hace X con el argumento
-    """
-    return argumento_modificado
-```
-Lo importante es que expliquen qué hace la función y que si saben que alguna parte puede quedar complicada de entender o tienen alguna función mágica usen los comentarios/documentación para que el ayudante entienda sus intenciones.
-
-## Referencias de código externo :book:
-
-Para realizar mi tarea saqué código de:
-1. \<link de código>: este hace \<lo que hace> y está implementado en el archivo <nombre.py> en las líneas <número de líneas> y hace <explicación breve de que hace>
+- `DCCortaRamas.can_remove_node`
+- `DCCortaRamas.balance`
+- `DCCortaRamas.calculate_cost`
+- `DCCortaRamas.apply_solution`
