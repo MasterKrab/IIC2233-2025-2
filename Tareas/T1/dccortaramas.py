@@ -1,6 +1,5 @@
 import utilidades
 from pathlib import Path
-from collections import deque
 
 
 # Files constants
@@ -32,13 +31,15 @@ class Bonsai:
 
         with path.open(mode="r", encoding="utf-8") as file:
             for line in file:
-                id, hasFlowerText, canEditText, childsText = line.strip().split(",")
+                id, has_flower_text, can_edit_text, childs_text = line.strip().split(
+                    ","
+                )
 
-                hasFlower = hasFlowerText == "T"
-                canEdit = canEditText == "T"
-                childs = childsText.split(";")
+                has_flower = has_flower_text == "T"
+                can_edit = can_edit_text == "T"
+                childs = childs_text.split(";")
 
-                node = [id, hasFlower, canEdit, childs]
+                node = [id, has_flower, can_edit, childs]
 
                 self.estructura.append(node)
 
@@ -59,6 +60,10 @@ class Bonsai:
             file.write(visualization)
 
     def find_node_index(self, id: int) -> int | None:
+        """
+        Search node by id and return its index in the structure
+        """
+
         for i in range(len(self.estructura)):
             if self.estructura[i][0] == id:
                 return i
@@ -66,6 +71,9 @@ class Bonsai:
         return None
 
     def find_node(self, id: str) -> list | None:
+        """
+        Search node by id and return it
+        """
         for node in self.estructura:
             if node[0] == id:
                 return node
@@ -73,6 +81,9 @@ class Bonsai:
         return None
 
     def find_parent(self, id: str) -> list | None:
+        """
+        Search parent of a node by id and return it
+        """
         for node in self.estructura:
             if id in node[3]:
                 return node
@@ -80,6 +91,9 @@ class Bonsai:
         return None
 
     def remove_node(self, id: str) -> None:
+        """
+        Remove node by id and do the necessary changes in the structure
+        """
         index = self.find_node_index(id)
 
         self.estructura.pop(index)
@@ -94,6 +108,9 @@ class Bonsai:
                 parent[3][i] = "0"
 
     def copy(self):
+        """
+        Return a copy of the bonsai
+        """
         tree = Bonsai(self.identificador, self.costo_corte, self.costo_flor, [])
 
         for *data, childs in self.estructura:
@@ -116,12 +133,15 @@ class DCCortaRamas:
         return DONE
 
     def quitar_nodo(self, bonsai: Bonsai, identificador: str) -> str:
+        # A stack to search the nodes to remove
         to_search = [identificador]
+
         nodes_to_remove = set()
 
         while to_search:
             node_id_to_remove = to_search.pop()
 
+            # Node not exists
             if node_id_to_remove == "0":
                 continue
 
@@ -142,28 +162,40 @@ class DCCortaRamas:
 
         return DONE
 
-    def es_simetrico(self, bonsai: Bonsai) -> bool:
-        cost, instrucctions = self.balance(bonsai)
-
-        return cost == 0 and not instrucctions
-
     def can_remove_node(self, bonsai: Bonsai, node_id: str) -> bool:
+        """
+        Return a bool indicating if a node can be removed
+        """
+
+        # Copy the bonsai and try to remove the node to check if it can be removed
         return self.quitar_nodo(bonsai.copy(), node_id) == DONE
 
     def balance(self, bonsai: Bonsai) -> list:
+        """
+        Return the cost and instructions to balance the bonsai. If it's not possible return
+        [float("inf"), []], if it's already balanced return [0, []] and if it's possible
+        return the cost and instructions.
+        """
+
         def merge_solutions(a: list, b: list):
             return [a[0] + b[0], [*a[1], *b[1]]]
 
+        # Recursive function to find the best solution by exploring the tree while accounting
+        # for symmetric nodes. It calculates the cost of three possible actions: modifying the
+        # flower, removing both nodes, or doing nothing (if the nodes are symmetric). It checks
+        # all meaningful changes, so it's guaranteed to find the best solution.
         def search(node_a: list | None, node_b: list | None):
             if node_a is None and node_b is None:
                 return [0, []]
 
+            # If node_a is None, we only can remove node_b
             if node_a is None and node_b is not None:
                 if not self.can_remove_node(bonsai.copy(), node_b[0]):
                     return [float("inf"), []]
 
                 return [bonsai.costo_corte, [[REMOVE_NODE, node_b[0]]]]
 
+            # If node_b is None, we only can remove node_a
             if node_b is None and node_a is not None:
                 if not self.can_remove_node(bonsai.copy(), node_a[0]):
                     return [float("inf"), []]
@@ -181,13 +213,16 @@ class DCCortaRamas:
 
             best_solution = [float("inf"), []]
 
+            # Solution to balance both subtrees
             subtree_solution = merge_solutions(
                 search(left_child_a, right_child_b), search(right_child_a, left_child_b)
             )
 
+            # If the nodes are symmetric, we can do nothing
             if node_a[1] == node_b[1]:
                 best_solution = min(best_solution, subtree_solution)
 
+            # If the nodes are not symmetric, we can try to modify the flower
             if node_a[1] != node_b[1]:
                 if node_a[2]:
                     solution = merge_solutions(
@@ -205,11 +240,13 @@ class DCCortaRamas:
 
                     best_solution = min(best_solution, solution)
 
+            # Checks if we can remove both nodes
             copy = bonsai.copy()
             can_remove = self.can_remove_node(copy, node_a[0]) and self.can_remove_node(
                 copy, node_b[0]
             )
 
+            # If we can remove both nodes, we can try to remove them
             if can_remove:
                 solution = [
                     2 * bonsai.costo_corte,
@@ -227,15 +264,25 @@ class DCCortaRamas:
 
         return search(left, right)
 
+    def es_simetrico(self, bonsai: Bonsai) -> bool:
+        cost, instrucctions = self.balance(bonsai)
+
+        # If the cost is 0 and there are no instructions, the bonsai is already symetric
+        return cost == 0 and not instrucctions
+
     def emparejar_bonsai(self, bonsai: Bonsai) -> list:
         cost, instrucctions = self.balance(bonsai)
 
+        # If the cost is infinite, then it's not possible
         if cost == float("inf"):
             return [False, []]
 
         return [True, instrucctions]
 
     def calculate_cost(self, bonsai: Bonsai, instrucciones: list) -> int:
+        """
+        Calculate the cost of a solution
+        """
         cost = 0
 
         for instruccion in instrucciones:
@@ -249,7 +296,11 @@ class DCCortaRamas:
 
         return cost
 
-    def apply_solution(self, bonsai: Bonsai, instrucciones: list) -> bool:
+    def apply_solution(self, bonsai: Bonsai, instrucciones: list) -> str:
+        """
+        Apply the changes of a solution to a bonsai, return DONE if it's possible,
+        FAILS otherwise
+        """
         for type, id in instrucciones:
             if type == MODIFY_FLOWER:
                 if self.modificar_nodo(bonsai, id) != DONE:
@@ -267,12 +318,14 @@ class DCCortaRamas:
     def emparejar_bonsai_ahorro(self, bonsai: Bonsai) -> list:
         cost, instrucctions = self.balance(bonsai)
 
+        # If the cost is infinite, then it's not possible
         if cost == float("inf"):
             return [False, []]
 
         return [True, cost, instrucctions]
 
     def comprobar_solucion(self, bonsai: Bonsai, instrucciones: list) -> list:
+        # Checks if the solution is correct
         if self.apply_solution(bonsai.copy(), instrucciones) == DONE:
             return [True, self.calculate_cost(bonsai, instrucciones)]
 
