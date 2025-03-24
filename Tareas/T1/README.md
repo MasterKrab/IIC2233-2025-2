@@ -55,7 +55,7 @@ La lista de librerías externas que utilicé fue la siguiente:
 
 Por otro lado, los módulos que fueron creados fueron los siguientes:
 
-1. `dccortaramas`: Contiene a `Bonsai` y `DCCortaRamas`.
+1. `dccortaramas`: Contiene a las clases `Bonsai` y `DCCortaRamas`. También las constantes `READ_FOLDER`, `WRITE_FOLDER`, `NOT_ALLOWED`, `DONE`, `NOT_FOUND`, `FAILS`, `MODIFY_FLOWER` y `REMOVE_NODE`.
 
 ## Supuestos y consideraciones adicionales :thinking:
 
