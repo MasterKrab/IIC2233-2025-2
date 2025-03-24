@@ -52,12 +52,16 @@ def ask_yes_no(question: str) -> bool:
         print("Respuesta no válida.")
 
 
-def ask_number(question: str) -> int:
+def ask_non_negative_number(question: str) -> int:
 
     while True:
         answer = input(f"{question}: ").strip()
 
         if answer.isdigit():
+            if int(answer) < 0:
+                print("El número debe ser no negativo.")
+                continue
+
             return int(answer)
 
         print("Respuesta no válida.")
@@ -149,8 +153,10 @@ def main():
                 tree_copy = tree.copy()
 
                 if with_min_cost:
-                    cut_cost = ask_number("Ingrese el costo de corte")
-                    flower_cost = ask_number("Ingrese el costo de modificar una flor")
+                    cut_cost = ask_non_negative_number("Ingrese el costo de corte")
+                    flower_cost = ask_non_negative_number(
+                        "Ingrese el costo de modificar una flor"
+                    )
 
                     tree.costo_corte = cut_cost
                     tree.costo_flor = flower_cost
@@ -168,8 +174,10 @@ def main():
                         corta_ramas.apply_solution(tree, changes)
 
                         print(
-                            f"El bonsái fue podado con costo mínimo de {cost} y {len(changes)} cambios"
+                            f"El bonsái fue podado con costo mínimo de {cost}", end=""
                         )
+
+                        print(f"y {len(changes)} cambios")
 
                         print_tree_change(tree_copy, tree)
                     else:
