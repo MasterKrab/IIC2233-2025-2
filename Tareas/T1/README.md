@@ -77,7 +77,7 @@ A la clase `Bonsai` añadí los suguientes métodos explicados en el código mis
 - `Bonsai.remove_node`
 - `Bonsai.copy`
 
-A la clase `DCCortaRamas` añadí los suguientes métodos explicados en el código mismo comentarios:
+A la clase `DCCortaRamas` añadí los suguientes métodos explicados en el código mismo con comentarios:
 
 - `DCCortaRamas.can_remove_node`
 - `DCCortaRamas.balance`
