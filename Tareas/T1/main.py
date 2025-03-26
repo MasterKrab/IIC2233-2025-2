@@ -161,6 +161,9 @@ def main():
                 print("El bonsái esta vacío.")
 
         if answer == 2:
+            print()
+            tree.visualizar_bonsai("Vertical", True, False)
+            print()
             id = ask_text("Ingrese el nodo a modificar del Bonsái")
 
             response_to_modify = corta_ramas.modificar_nodo(tree, id)
@@ -178,6 +181,9 @@ def main():
                     print("Se ha removido la flor al nodo.")
 
         if answer == 3:
+            print()
+            tree.visualizar_bonsai("Vertical", True, False)
+            print()
             id = ask_text("Ingrese el nodo a eliminar del Bonsái")
 
             nodes_before = tree.get_nodes()
