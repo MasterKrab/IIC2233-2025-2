@@ -118,6 +118,21 @@ class Bonsai:
 
         return tree
 
+    def get_nodes(self):
+        """
+        Return a set of the nodes
+        """
+
+        nodes = set()
+
+        for node in self.estructura:
+            nodes.add(node[0])
+            nodes.update(node[3])
+
+        nodes.discard("0")
+
+        return nodes
+
 
 class DCCortaRamas:
     def modificar_nodo(self, bonsai: Bonsai, identificador: str) -> str:
@@ -265,6 +280,9 @@ class DCCortaRamas:
         return search(left, right)
 
     def es_simetrico(self, bonsai: Bonsai) -> bool:
+        if not bonsai.estructura:
+            return True
+
         cost, instrucctions = self.balance(bonsai)
 
         # If the cost is 0 and there are no instructions, the bonsai is already symetric

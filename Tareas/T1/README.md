@@ -61,7 +61,7 @@ Por otro lado, los módulos que fueron creados fueron los siguientes:
 
 Los supuestos que realicé durante la tarea son los siguientes:
 
-1. El costo de cortar un nodo y modificar un nodo deben ser valores no negativos, debido que si son negativos estaríamos ganando, entonces no es un costo. Un costo igual a cero tiene sentido porque representaría que esa acción es gratis, considerar esto en el código no afecta al funcionamiento si es que no hay costo cero.
+1. El costo de cortar un nodo y modificar un nodo deben ser valores no negativos, debido que si son negativos estaríamos ganando, entonces no es un costo. Un costo igual a cero tiene sentido porque representaría que esa acción es gratis, considerar esto en el código no afecta al funcionamiento si es que no hay costo cero. También se asume que el costo siempre es entero por los tests públicos.
 
 2. En los tests públicos la cantidad de nodos es a lo más 50, entonces, se podría asumir que ese el tamaño máximo. Aunque, para asegurarse cree mis propios casos de prueba con árboles de hasta 1000 nodos y me aseguré que demoraran menos de 10 segundos en emparejar.
 
@@ -76,6 +76,7 @@ A la clase `Bonsai` añadí los suguientes métodos explicados en el código mis
 - `Bonsai.find_parent`
 - `Bonsai.remove_node`
 - `Bonsai.copy`
+- `Bonsai.get_nodes`
 
 A la clase `DCCortaRamas` añadí los suguientes métodos explicados en el código mismo con comentarios:
 

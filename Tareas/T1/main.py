@@ -1,4 +1,11 @@
-from dccortaramas import Bonsai, DCCortaRamas, DONE, READ_FOLDER
+from dccortaramas import (
+    Bonsai,
+    DCCortaRamas,
+    READ_FOLDER,
+    NOT_FOUND,
+    NOT_ALLOWED,
+    MODIFY_FLOWER,
+)
 from pathlib import Path
 
 
@@ -8,13 +15,34 @@ def print_top():
     print()
 
 
+def ask_text(question: str) -> str:
+    while True:
+        text = input(f"{question}: ").strip()
+
+        if not text:
+            print("Debe ingresar un valor.")
+            continue
+
+        return text
+
+
 def print_menu(options: list[str]) -> int:
     for i, option in enumerate(options):
         print(f"{i + 1}. {option}")
 
     numbers = str(list(range(1, len(options) + 1)))[1:-1]
 
-    return input(f"Indique su opción ({numbers}): ")
+    while True:
+        answer = input(f"Indique su opción ({numbers}): ").strip()
+
+        if not answer:
+            print("Debe ingresar una opción.")
+            continue
+
+        if answer.isnumeric() and int(answer) in range(1, len(options) + 1):
+            return int(answer)
+
+        print("Opción no válida.")
 
 
 def erase_prints():
@@ -22,14 +50,12 @@ def erase_prints():
 
 
 def print_tree_change(before: Bonsai, after: Bonsai):
-    print()
-    print("Bonsái original:")
-    print()
+    print("\nBonsái original:\n")
 
     before.visualizar_bonsai("Vertical", True, False)
 
     print()
-    print("Bonsái modificado:")
+    print("\nBonsái modificado:")
     print()
 
     after.visualizar_bonsai("Vertical", True, False)
@@ -42,6 +68,10 @@ def ask_yes_no(question: str) -> bool:
 
     while True:
         answer = input(f"{question} (Si/No): ").strip().lower()
+
+        if not answer:
+            print("Debe ingresar una opción.")
+            continue
 
         if answer == "s" or answer == "si":
             return True
@@ -57,7 +87,11 @@ def ask_non_negative_number(question: str) -> int:
     while True:
         answer = input(f"{question}: ").strip()
 
-        if answer.isdigit():
+        if not answer:
+            print("Debe ingresar una opción.")
+            continue
+
+        if answer.isnumeric():
             if int(answer) < 0:
                 print("El número debe ser no negativo.")
                 continue
@@ -67,11 +101,22 @@ def ask_non_negative_number(question: str) -> int:
         print("Respuesta no válida.")
 
 
+def print_changes(tree: Bonsai, changes: list[list[int, int]]):
+    for type, id in changes:
+        if type == MODIFY_FLOWER:
+            if tree.find_node(id)[1]:
+                print(f"Se ha añadido la flor al nodo {id}.")
+            else:
+                print(f"Se ha removido la flor al nodo {id}.")
+        else:
+            print(f"Se ha removido el nodo {id}.")
+
+
 def main():
     print_top()
 
     while True:
-        answer = int(print_menu(["Cargar bonsái", "Salir del programa"]))
+        answer = print_menu(["Cargar bonsái", "Salir del programa"])
 
         if answer == 2:
             return
@@ -79,10 +124,8 @@ def main():
         if answer == 1:
             break
 
-        print("Opción no válida.")
-
-    folder = input("Ingrese la carpeta donde se encuentra el archivo: ")
-    filename = input("Ingrese el nombre del archivo: ")
+    folder = ask_text("Ingrese la carpeta donde se encuentra el archivo")
+    filename = ask_text("Ingrese el nombre del archivo")
 
     if not Path(READ_FOLDER, folder, filename).exists():
         print("El archivo no existe en la carpeta indicada.")
@@ -96,46 +139,63 @@ def main():
         erase_prints()
         print_top()
 
-        answer = int(
-            print_menu(
-                [
-                    "Visualizar bonsái",
-                    "Modificar Hoja",
-                    "Cortar Rama",
-                    "Verificar Simetría",
-                    "Podar Bonsái",
-                    "Salir del programa",
-                ]
-            )
+        answer = print_menu(
+            [
+                "Visualizar bonsái",
+                "Modificar Hoja",
+                "Cortar Rama",
+                "Verificar Simetría",
+                "Podar Bonsái",
+                "Salir del programa",
+            ]
         )
 
         if answer == 6:
             return
 
         if answer == 1:
-            tree.visualizar_bonsai("Vertical", True, False)
+            if tree.estructura:
+                print()
+                tree.visualizar_bonsai("Vertical", True, False)
+            else:
+                print("El bonsái esta vacío.")
 
         if answer == 2:
-            id = input("Ingrese el nodo a modificar del Bonsái: ").strip()
+            id = ask_text("Ingrese el nodo a modificar del Bonsái")
 
-            if corta_ramas.modificar_nodo(tree, id) != DONE:
-                print("No se pudo modificar el nodo.")
+            response_to_modify = corta_ramas.modificar_nodo(tree, id)
 
+            if response_to_modify == NOT_ALLOWED:
+                print("No esta permitido modificar el nodo.")
+            elif response_to_modify == NOT_FOUND:
+                print("No se pudo encontrar el nodo.")
             else:
                 has_flower = tree.find_node(id)[1]
 
                 if has_flower:
-                    print("Se ha agregado la flor al nodo .")
+                    print("Se ha agregado la flor al nodo.")
                 else:
                     print("Se ha removido la flor al nodo.")
 
         if answer == 3:
-            id = input("Ingrese el nodo a eliminar del Bonsái: ").strip()
+            id = ask_text("Ingrese el nodo a eliminar del Bonsái")
 
-            if corta_ramas.quitar_nodo(tree, id) == DONE:
-                print("Se ha eliminado el nodo.")
+            nodes_before = tree.get_nodes()
+
+            response_to_remove = corta_ramas.quitar_nodo(tree, id)
+
+            if response_to_remove == NOT_ALLOWED:
+                print("No esta permitido eliminar el nodo.")
+            elif response_to_remove == NOT_FOUND:
+                print("No se pudo encontrar el nodo.")
             else:
-                print("No se pudo eliminar el nodo.")
+                nodes_after = tree.get_nodes()
+
+                removed_nodes = nodes_before - nodes_after
+
+                print(
+                    f"Se han eliminado los nodo(s): {', '.join(list(removed_nodes))}."
+                )
 
         if answer == 4:
             if corta_ramas.es_simetrico(tree):
@@ -174,10 +234,12 @@ def main():
                         corta_ramas.apply_solution(tree, changes)
 
                         print(
-                            f"El bonsái fue podado con costo mínimo de {cost}", end=""
+                            f"El bonsái fue podado con costo mínimo de {cost} ", end=""
                         )
 
-                        print(f"y {len(changes)} cambios")
+                        print(f"y con los siguientes cambios:")
+
+                        print_changes(tree, changes)
 
                         print_tree_change(tree_copy, tree)
                     else:
@@ -186,7 +248,9 @@ def main():
                     was_balanced, changes = corta_ramas.emparejar_bonsai(tree)
 
                     if was_balanced:
-                        print(f"El bonsái fue podado con {len(changes)} cambios")
+                        print(f"El bonsái fue podado con los siguientes cambios:")
+
+                        print_changes(tree, changes)
 
                         corta_ramas.apply_solution(tree, changes)
 
@@ -194,12 +258,7 @@ def main():
                     else:
                         print("No es posible podar el bonsái.")
 
-        print()
-
-        if 1 <= answer <= 5:
-            input("Presione enter para volver al menu. ")
-        else:
-            print("Opción no válida.")
+        input("\nPresione enter para volver al menu. ")
 
 
 if __name__ == "__main__":
