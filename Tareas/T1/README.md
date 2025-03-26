@@ -50,6 +50,8 @@ El módulo principal a ejecutar es `main.py`, que inicia un menú. Además, se d
 Se utilizaron las siguientes librerías externas:
 
 1. `pathlib`: `Path`
+2. `PrettyPrintTree`
+3. `utilidades`: `visualizar_bonsai`
 
 ### Librerías propias
 
