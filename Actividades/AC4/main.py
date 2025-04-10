@@ -24,16 +24,6 @@ class ListaUrgencias:
 
         return IteradorListarUrgencias(copy)
 
-    # nodes = []
-
-    # current = self.cabeza
-
-    # while current:
-    #     nodes.append(current)
-    #     current = current.siguiente
-
-    # return IteradorListarUrgencias(nodes)
-
     def agregar_urgencia(self, urgencia: Urgencia) -> None:
         node = NodoUrgencia(urgencia)
 
