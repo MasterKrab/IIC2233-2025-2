@@ -18,6 +18,8 @@ DINERO_INICIAL = 150
 
 DINERO_CACTOOS = 50
 
+GANANCIA_POR_RONDA = 20
+
 POSITIVE_MODIFIER_FILE = "modificadores.txt"
 
 NEGATIVE_MODIFIER_FILE = "modificadores_negativos.txt"

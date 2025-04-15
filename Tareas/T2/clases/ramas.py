@@ -119,7 +119,7 @@ class Rama(ABC):
         if not has_new_negative_modifer:
             return
 
-        name = choice(ModificadorNegativo.get_negative_modifiers())
+        name = choice(ModificadorNegativo.get_modifiers())
 
         self.cargar_modificador(ModificadorNegativo(name))
 
