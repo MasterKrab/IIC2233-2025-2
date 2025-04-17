@@ -34,7 +34,7 @@ def main():
     if dificulty_or_save_file not in DIFICULTIES and not is_save_file:
         print(
             f"El valor entregado no es una dificultad válida ni archivo de guardado "
-            "existente, las dificutades disponibles son {dificulties_text}."
+            f"existente, las dificutades disponibles son {dificulties_text}."
         )
         return
 

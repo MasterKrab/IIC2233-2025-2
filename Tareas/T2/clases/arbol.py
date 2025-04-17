@@ -1,6 +1,8 @@
 from clases.ramas import Rama
 from clases.modificador import Modificador
 
+from utils.id import create_id_generator
+
 from copy import deepcopy
 from random import choice
 from typing import Self
@@ -202,12 +204,11 @@ class Arbol:
         The ids are generated starting from id_start.
         """
 
-        id = id_start
+        generate_id = create_id_generator(id_start)
 
         tree_copy = deepcopy(self)
 
         for branch in tree_copy.branches:
-            branch.id = id
-            id += 1
+            branch.id = generate_id()
 
         return tree_copy
