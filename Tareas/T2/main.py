@@ -16,8 +16,11 @@ def main():
     dificulties_text = ", ".join(DIFICULTIES)
 
     if len(sys.argv) <= 1:
-        print(f"Se debe específicar la dificultad ({dificulties_text}).")
-        print("Formato: python main.py [dificultad]")
+        print(
+            f"Se debe específicar la dificultad ({dificulties_text}) o el nombre de un archivo de guardado."
+        )
+        print("Formato: python main.py [dificultad, archivo de guardado]")
+
         return
 
     dificulty_or_save_file = sys.argv[1].lower()
