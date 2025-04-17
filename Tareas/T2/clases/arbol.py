@@ -66,11 +66,11 @@ class Arbol:
 
     @property
     def branches_by_level(self) -> list[tuple[int, Rama]]:
-        def get_branches(rama: Rama, level: int = 0):
+        def get_branches(rama: Rama, level: int = 1):
             branches = [(level, rama)]
 
             for rama_hija in rama.ramas_hijas:
-                branches = [*branches, *get_branches(rama_hija)]
+                branches = [*branches, *get_branches(rama_hija, level + 1)]
 
             return branches
 
@@ -94,7 +94,7 @@ class Arbol:
 
         for branch in self.branches_by_level:
             if branch[0] == self.max_deep:
-                deeper_branches.append(branch)
+                deeper_branches.append(branch[1])
 
         return choice(deeper_branches)
 
@@ -159,7 +159,7 @@ class Arbol:
 
         average_damage = total_damage / len(self.branches)
 
-        return f"{self.nombre}, {len(self.branches)} ramas, {total_health} salud, {average_damage} daño promedio"
+        return f"{self.nombre}, {len(self.branches)} ramas, {total_health} salud, {average_damage} daño promedio, {self.max_deep} profundida máxima."
 
     def copy(self, id_start) -> Self:
         generate_id = create_id_generator(id_start)

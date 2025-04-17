@@ -94,9 +94,9 @@ class Rama(ABC):
             )
             return
 
-        if self.modificador:
+        if modifier:
             print(
-                f"En la rama [{self.id}] {self.nombre} el modificador {self.modificador} ha sido reemplazado por el modificador {modificador}."
+                f"En la rama [{self.id}] {self.nombre} el modificador {modifier} ha sido reemplazado por el modificador {modificador}."
             )
         else:
             print(
@@ -258,7 +258,7 @@ class Hyedrid(Rama):
             )
 
         print(
-            f"En la rama [{self.id}] {self.nombre} el modificador {modificador.nombre} ha sido añadido."
+            f"En la rama [{self.id}] {self.nombre} el modificador {modificador} ha sido añadido."
         )
 
         self._modificadores.append(modificador)

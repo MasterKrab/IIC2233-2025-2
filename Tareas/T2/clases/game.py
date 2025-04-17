@@ -33,9 +33,6 @@ class Game:
             print(f"Dinero disponible: ${self.dinero}")
             print(f"Ronda actual: {self.round}")
 
-            print(self.player_tree)
-            print(self.enemy_tree)
-
             options = [
                 "Atacar y pasar ronda",
                 "Pasar ronda sin atacar",
@@ -127,6 +124,8 @@ class Game:
                 if ask_yes_no("¿Salir de la partida?"):
                     exit_message()
                     return
+
+                continue
 
             if answer == 7:
                 exit_message()
