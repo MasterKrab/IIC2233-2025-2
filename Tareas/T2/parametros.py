@@ -23,3 +23,5 @@ GANANCIA_POR_RONDA = 20
 POSITIVE_MODIFIER_FILE = "modificadores.txt"
 
 NEGATIVE_MODIFIER_FILE = "modificadores_negativos.txt"
+
+SAVES_FOLDER = "saves"

@@ -1,12 +1,14 @@
 from copy import deepcopy
-import sys
 from random import randint
+from pathlib import Path
+import sys
 
 from clases.game import Game
 from utils.read import read_trees
 from utils.terminal import print_title, continue_input
 from utils.menu import print_menu
-from parametros import DIFICULTIES
+from utils.read_save import read_save
+from parametros import DIFICULTIES, SAVES_FOLDER
 
 
 def main():
@@ -17,13 +19,24 @@ def main():
         print("Formato: python main.py [dificultad]")
         return
 
-    dificulty = sys.argv[1].lower()
+    dificulty_or_save_file = sys.argv[1].lower()
 
-    if dificulty not in DIFICULTIES:
-        print(f"La dificultad no existe, las disponibles son {dificulties_text}.")
+    is_save_file = Path(SAVES_FOLDER, dificulty_or_save_file).exists()
+
+    if is_save_file:
+        print("Leyendo partida guardada...")
+        game = read_save(dificulty_or_save_file)
+        print("¡Partida leída existosamente!")
+        game.loop()
         return
 
-    trees = read_trees(dificulty)
+    if dificulty_or_save_file not in DIFICULTIES and not is_save_file:
+        print(
+            f"El valor entregado no es una dificultad válida ni archivo de guardado existente, las dificutades disponibles son {dificulties_text}."
+        )
+        return
+
+    trees = read_trees(dificulty_or_save_file)
 
     print_title("SELECCIÓN INICIAL")
 

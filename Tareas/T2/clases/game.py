@@ -4,7 +4,7 @@ from parametros import DINERO_INICIAL, GANANCIA_POR_RONDA
 from clases.arbol import Arbol
 from clases.modificador import ModificadorPositivo
 
-from utils.terminal import erase_terminal, print_title, continue_input
+from utils.terminal import erase_terminal, print_title, continue_input, exit_message
 from utils.menu import print_menu, get_number_in_set
 
 from utils.save_game import save_game
@@ -67,6 +67,12 @@ class Game:
 
                 self.enemy_tree.recibir_dano(player_damage)
 
+                if self.enemy_tree.rama_principal == None:
+                    print("El árbol enemigo ha muerto.")
+                    print("¡Has ganado el juego!")
+                    exit_message()
+                    return
+
                 enemy_choose = self.enemy_tree.branches[
                     randint(0, len(self.enemy_tree.branches) - 1)
                 ]
@@ -78,6 +84,12 @@ class Game:
                 )
 
                 self.player_tree.recibir_dano(enemy_damage)
+
+                if self.player_tree.rama_principal == None:
+                    print("Tu árbol ha muerto.")
+                    print("¡Has perdido el juego!")
+                    exit_message()
+                    return
 
             if answer in (1, 2):
                 print("Pasando ronda...")
@@ -107,7 +119,7 @@ class Game:
                 print("Partida guardada!")
 
             if answer == 7:
-                print("Saliendo del juego, gracias por jugar.")
+                exit_message()
                 return
 
             continue_input()

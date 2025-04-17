@@ -132,6 +132,11 @@ class Arbol:
             dano = branch.recibir_dano(dano)
             branch = self.find_parent(branch)
 
+        for branch in self.branches:
+            if branch.salud == 0:
+                print(f"La rama [{branch.id}] {branch.nombre} ha muerto.")
+                self.remove_branch(branch)
+
     def resumir_arbol(self) -> str:
         total_health = 0
         total_damage = 0

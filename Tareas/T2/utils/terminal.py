@@ -30,3 +30,7 @@ def create_table(
 
 def continue_input():
     input("Presiona ENTER para continuar...")
+
+
+def exit_message():
+    print("Saliendo del juego, gracias por jugar.")
