@@ -3,7 +3,7 @@ from clases.arbol import Arbol
 from clases.ramas import Rama, get_branch_class, Hyedrid
 from clases.game import Game
 
-from utils.input import read_input, read_inputs
+from utils.input import read_input
 
 from parametros import SAVES_FOLDER
 

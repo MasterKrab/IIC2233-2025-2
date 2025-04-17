@@ -1,8 +1,6 @@
 from clases.ramas import Rama
 from clases.modificador import Modificador
 
-from utils.id import create_id_generator
-
 from copy import deepcopy
 from random import choice
 from typing import Self
@@ -54,6 +52,10 @@ class Arbol:
 
     @property
     def branches(self) -> list[Rama]:
+        """
+        Returns a list of all branches in the tree.
+        """
+
         def get_branches(rama: Rama):
             branches = [rama]
 
@@ -66,6 +68,10 @@ class Arbol:
 
     @property
     def branches_by_level(self) -> list[tuple[int, Rama]]:
+        """
+        Returns all branches in the tree with their level.
+        """
+
         def get_branches(rama: Rama, level: int = 1):
             branches = [(level, rama)]
 
@@ -78,10 +84,18 @@ class Arbol:
 
     @property
     def max_deep(self) -> int:
+        """
+        Returns the maximum depth of the tree.
+        """
+
         return max([branch[0] for branch in self.branches_by_level])
 
     @property
     def branches_ids(self) -> set[int]:
+        """
+        Returns a set of all branches ids in the tree.
+        """
+
         ids = set()
 
         for branch in self.branches:
@@ -90,6 +104,9 @@ class Arbol:
         return ids
 
     def get_random_deeper_branch(self) -> Rama:
+        """
+        Returns a random branch from the deepest level of the tree.
+        """
         deeper_branches = []
 
         for branch in self.branches_by_level:
@@ -99,6 +116,11 @@ class Arbol:
         return choice(deeper_branches)
 
     def find_parent(self, target_branch: Rama) -> Rama | None:
+        """
+        Returns the parent of the target branch.
+        If the target branch is the main branch, return None (no parent).
+        """
+
         def find_parent(rama: Rama):
             if rama == target_branch:
                 return None
@@ -117,6 +139,11 @@ class Arbol:
         return find_parent(self.rama_principal)
 
     def find_by_id(self, id: int) -> Rama | None:
+        """
+        Returns the branch with the given id.
+        If the branch is not found, return None.
+        """
+
         for branch in self.branches:
             if branch.id == id:
                 return branch
@@ -124,6 +151,11 @@ class Arbol:
         return None
 
     def remove_branch(self, target_branch: Rama):
+        """
+        Removes the target branch from the tree.
+        If the target branch is the main branch, changes the main branch to None.
+        """
+
         if target_branch == self.rama_principal:
             self.rama_principal = None
             return
@@ -159,14 +191,23 @@ class Arbol:
 
         average_damage = total_damage / len(self.branches)
 
-        return f"{self.nombre}, {len(self.branches)} ramas, {total_health} salud, {average_damage} daño promedio, {self.max_deep} profundida máxima."
+        return (
+            f"{self.nombre}, {len(self.branches)} ramas, {total_health} salud, "
+            f"{average_damage} daño promedio, {self.max_deep} profundida máxima."
+        )
 
     def copy(self, id_start) -> Self:
-        generate_id = create_id_generator(id_start)
+        """
+        Returns a copy of the tree with new ids.
+        The ids are generated starting from id_start.
+        """
+
+        id = id_start
 
         tree_copy = deepcopy(self)
 
         for branch in tree_copy.branches:
-            branch.id = generate_id()
+            branch.id = id
+            id += 1
 
         return tree_copy

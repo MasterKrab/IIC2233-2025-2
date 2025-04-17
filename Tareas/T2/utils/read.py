@@ -1,24 +1,23 @@
 from clases.arbol import Arbol
 from clases.ramas import Rama, get_branch_class
 
-from utils.id import create_id_generator
+from utils.input import read_input
 
 from parametros import DATA_FOLDER, FILES_BY_DIFICULTIES
 
 from pathlib import Path
 
 
-generate_id = create_id_generator()
-
-
-def create_branch(name: str) -> Rama:
+def create_branch(name: str, id: int) -> Rama:
     branch = get_branch_class(name)
 
-    return branch(generate_id())
+    return branch(id)
 
 
-def read_branches(branches_text: str) -> list[Rama]:
+def read_branches(branches_text: str, id_start: int) -> Rama:
     stack = []
+
+    id = id_start
 
     i = 0
     current = ""
@@ -35,7 +34,8 @@ def read_branches(branches_text: str) -> list[Rama]:
                 text += branches_text[i]
                 i += 1
 
-            rama = create_branch(text)
+            rama = create_branch(text, id)
+            id += 1
 
             if stack:
                 stack[-1].ramas_hijas.append(rama)
@@ -49,7 +49,8 @@ def read_branches(branches_text: str) -> list[Rama]:
 
         if item in "};":
             if current:
-                stack[-1].ramas_hijas.append(create_branch(current))
+                stack[-1].ramas_hijas.append(create_branch(current, id))
+                id += 1
 
             current = ""
 
@@ -62,19 +63,23 @@ def read_branches(branches_text: str) -> list[Rama]:
         i += 1
 
 
-def read_trees(dificulty: str):
+def read_trees(dificulty: str) -> list[Arbol]:
     trees = []
+
+    id = 1
 
     with Path(DATA_FOLDER, FILES_BY_DIFICULTIES[dificulty]).open() as file:
         for line in file:
-            name, branches_text = map(str.strip, line.split(":"))
+            name, branches_text = read_input([str, str], ":", line)
 
             main_branch = read_branches(
-                branches_text.replace(" ", "").replace("};", "}").replace(";{", "{")
+                branches_text.replace(" ", "").replace("};", "}").replace(";{", "{"),
+                id,
             )
 
             tree = Arbol(main_branch, name)
 
+            id = max(tree.branches_ids) + 1
             trees.append(tree)
 
     return trees

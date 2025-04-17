@@ -1,6 +1,7 @@
 from clases.modificador import Modificador, ModificadorNegativo
 
 from utils.choice import event_happens
+from utils.input import read_input
 
 from parametros import (
     DATA_FOLDER,
@@ -35,9 +36,9 @@ class Rama(ABC):
                 if not line.startswith(nombre):
                     continue
 
-                puntos_de_vida, defensa, dano_base, resistencia_a_plagas = map(
-                    float, line.split(";")[1:]
-                )
+                puntos_de_vida, defensa, dano_base, resistencia_a_plagas = read_input(
+                    [str, int, float, int, float], ";", line
+                )[1:]
 
                 self._vitalidad_maxima = int(puntos_de_vida)
                 self._salud = int(puntos_de_vida)
@@ -90,13 +91,14 @@ class Rama(ABC):
 
         if modifier is not None and self.salud == 0:
             print(
-                f"La rama ha muerto al descartar el modificador {modifier} (por tanto, no se puede cargar modificador)."
+                f"La rama ha muerto al descartar el modificador {modifier} (por tanto, "
+                "no se puede cargar modificador)."
             )
-            return
 
         if modifier:
             print(
-                f"En la rama [{self.id}] {self.nombre} el modificador {modifier} ha sido reemplazado por el modificador {modificador}."
+                f"En la rama [{self.id}] {self.nombre} el modificador {modifier} ha sido "
+                f"reemplazado por el modificador {modificador}."
             )
         else:
             print(
@@ -108,6 +110,9 @@ class Rama(ABC):
 
     @property
     def all_subtree_branches(self) -> list[Self]:
+        """
+        Returns all branches in the subtree, including itself.
+        """
 
         def get_branches(rama: Rama):
             branches = [rama]
@@ -121,6 +126,10 @@ class Rama(ABC):
 
     @property
     def modificadores(self) -> list[Modificador]:
+        """
+        Returns all modifiers in the branch
+        """
+
         if self.modificador is not None:
             return [self.modificador]
 
@@ -174,9 +183,18 @@ class Rama(ABC):
         if self.modificadores:
             modifiers = [str(modifier) for modifier in self.modificadores]
 
-            return f"{self.nombre}, Vida: {self.salud}/{self.vitalidad_maxima}, Daño base: {self.dano_base}, Defensa: {self.defensa * 100}%, Resistencia a plagas: {self.resistencia_a_plagas * 100}%, Modificadores: {', '.join(modifiers)}."
+            return (
+                f"{self.nombre}, Vida: {self.salud}/{self.vitalidad_maxima} "
+                f"Daño base: {self.dano_base}, Defensa: {self.defensa * 100}%, "
+                f"Resistencia a plagas: {self.resistencia_a_plagas * 100}%, "
+                f"Modificadores: {', '.join(modifiers)}."
+            )
 
-        return f"{self.nombre}, Vida: {self.salud}/{self.vitalidad_maxima}, Daño base: {self.dano_base}, Defensa: {self.defensa}, Resistencia a plagas: {self.resistencia_a_plagas}."
+        return (
+            f"{self.nombre}, Vida: {self.salud}/{self.vitalidad_maxima} "
+            f"Daño base: {self.dano_base}, Defensa: {self.defensa * 100}%, "
+            f"Resistencia a plagas: {self.resistencia_a_plagas * 100}%, "
+        )
 
     def __str__(self) -> str:
         return self.presentarse()
@@ -186,6 +204,10 @@ class Rama(ABC):
 
     @staticmethod
     def get_branches() -> list[str]:
+        """
+        Returns a list of all branches names.
+        """
+
         names = []
 
         with Path(DATA_FOLDER, BRANCHES_FILE).open() as file:
@@ -197,7 +219,10 @@ class Rama(ABC):
 
 
 class Ficus(Rama):
-    efecto = "Cada vez que transcurre una ronda, esta rama y sus hijas recuperan 4% de la salud faltante."
+    efecto = (
+        "Cada vez que transcurre una ronda, esta rama y sus hijas recuperan "
+        "4% de la salud faltante."
+    )
     nombre = "Ficus"
 
     def __init__(self, *args, **kwargs):
@@ -213,7 +238,10 @@ class Ficus(Rama):
 
 
 class Celery(Rama):
-    efecto = "Por cada ronda que esta rama no ataque ni forme parte de un ataque, su dano base aumenta un 1%."
+    efecto = (
+        "Por cada ronda que esta rama no ataque ni forme parte de un ataque, "
+        "su dano base aumenta un 1%."
+    )
     nombre = "Celery"
 
     def __init__(self, *args, **kwargs):
@@ -236,7 +264,11 @@ class Celery(Rama):
 
 
 class Hyedrid(Rama):
-    efecto = "Esta rama se puede equipar dos objetos Modificador en lugar de uno. Para la mecánica de reemplazo, se debe considerar el órden en que ingresan los objetos. Debe seguir una secuencia FIFO."
+    efecto = (
+        "Esta rama se puede equipar dos objetos Modificador en lugar de uno. "
+        "Para la mecánica de reemplazo, se debe considerar el órden en que ingresan "
+        "los objetos. Debe seguir una secuencia FIFO."
+    )
     nombre = "Hyedrid"
 
     def __init__(self, *args, **kwargs):
@@ -249,22 +281,29 @@ class Hyedrid(Rama):
 
             if self.salud == 0:
                 print(
-                    f"La rama ha muerto al descartar el modificador {removed.nombre} (por tanto, no se puede cargar modificador)."
+                    f"La rama ha muerto al descartar el modificador {removed.nombre} "
+                    "(por tanto, no se puede cargar modificador)."
                 )
                 return
 
             print(
-                f"En la rama [{self.id}] {self.nombre} el modificador {removed.nombre} ha sido descartado."
+                f"En la rama [{self.id}] {self.nombre} el modificador {removed.nombre} "
+                "ha sido descartado."
             )
 
         print(
-            f"En la rama [{self.id}] {self.nombre} el modificador {modificador} ha sido añadido."
+            f"En la rama [{self.id}] {self.nombre} el modificador {modificador} "
+            "ha sido añadido."
         )
 
         self._modificadores.append(modificador)
 
     @property
     def modificadores(self) -> list[Modificador]:
+        """
+        Returns all modifiers in the branch
+        """
+
         return self._modificadores
 
 
@@ -313,7 +352,10 @@ class Pine(Rama):
 
 
 class Cactoos(Rama):
-    efecto = f"Si no ataca ni recibe dano durante una ronda, genera {DINERO_CACTOOS} de dinero por cada rama hija."
+    efecto = (
+        f"Si no ataca ni recibe dano durante una ronda, genera {DINERO_CACTOOS} "
+        "de dinero por cada rama hija."
+    )
     nombre = "Cactoos"
 
     def __init__(self, *args, **kwargs):
@@ -341,6 +383,10 @@ class Cactoos(Rama):
         self.bonus = True
 
     def extract_money(self):
+        """
+        Resets the money to 0 and returns the amount of money.
+        """
+
         money = self.money
 
         self.money = 0
@@ -349,6 +395,12 @@ class Cactoos(Rama):
 
 
 def get_branch_class(name: str) -> Rama:
+    """
+    Returns the class of the branch with the given name.
+    """
+
     for branch in (Ficus, Celery, Hyedrid, Paalm, Alovelis, Pine, Cactoos):
         if branch.nombre.strip().lower() == name.lower():
             return branch
+
+    raise ValueError(f"No se encontró la rama con el nombre {name}.")

@@ -33,7 +33,8 @@ def main():
 
     if dificulty_or_save_file not in DIFICULTIES and not is_save_file:
         print(
-            f"El valor entregado no es una dificultad válida ni archivo de guardado existente, las dificutades disponibles son {dificulties_text}."
+            f"El valor entregado no es una dificultad válida ni archivo de guardado "
+            "existente, las dificutades disponibles son {dificulties_text}."
         )
         return
 
@@ -51,7 +52,8 @@ def main():
     player_tree = trees[answer - 1].copy(1)
 
     print(
-        f"Has seleccionado el árbol guerrero {player_tree.nombre} con {len(player_tree.branches)} ramas."
+        f"Has seleccionado el árbol guerrero {player_tree.nombre} con "
+        f"{len(player_tree.branches)} ramas."
     )
 
     print(player_tree.resumir_arbol())

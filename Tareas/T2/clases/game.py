@@ -21,11 +21,20 @@ class Game:
         self.round = 1
 
     def pasar_ronda(self):
+        """ "
+        Passes the round of both trees.
+        """
+
         self.round += 1
         self.player_tree.pasar_ronda()
         self.enemy_tree.pasar_ronda()
 
     def loop(self):
+        """
+        Starts the main game loop
+        It runs until the player wins or loses the game, or chooses to exit.
+        """
+
         while True:
             erase_terminal()
             print_title("MENU PRINCIPAL")
@@ -63,7 +72,8 @@ class Game:
                 player_damage = self.player_tree.atacar(player_branch)
 
                 print(
-                    f"La rama [{player_branch.id}] {player_branch.nombre} ha hecho {player_damage} de daño."
+                    f"La rama [{player_branch.id}] {player_branch.nombre} ha hecho, "
+                    f"{player_damage} de daño."
                 )
 
                 self.enemy_tree.recibir_dano(player_damage)
@@ -79,7 +89,8 @@ class Game:
                 enemy_damage = self.enemy_tree.atacar(enemy_branch)
 
                 print(
-                    f"La rama [{enemy_branch.id}] {enemy_branch.nombre} ha hecho {enemy_damage} de daño."
+                    f"La rama [{enemy_branch.id}] {enemy_branch.nombre} ha hecho "
+                    f"{enemy_damage} de daño.",
                 )
 
                 self.player_tree.recibir_dano(enemy_damage)
@@ -134,6 +145,10 @@ class Game:
             continue_input()
 
     def store(self):
+        """
+        Starts the store menu.
+        """
+
         modifiers = [
             ModificadorPositivo(name) for name in ModificadorPositivo.get_modifiers()
         ]

@@ -1,3 +1,5 @@
+from utils.input import read_input
+
 from parametros import (
     DATA_FOLDER,
     POSITIVE_MODIFIER_FILE,
@@ -31,7 +33,9 @@ class ModificadorPositivo(Modificador):
                 if not line.startswith(nombre):
                     continue
 
-                ataque, defensa, vida_maxima, precio = map(float, line.split(";")[1:])
+                ataque, defensa, vida_maxima, precio = read_input(
+                    [str, int, float, int, int], ";", line
+                )[1:]
 
                 super().__init__(nombre, ataque, defensa, vida_maxima)
 
@@ -41,6 +45,9 @@ class ModificadorPositivo(Modificador):
 
     @staticmethod
     def get_modifiers() -> list[str]:
+        """
+        Returns a list of all positive modifiers names.
+        """
         names = []
 
         with Path(DATA_FOLDER, POSITIVE_MODIFIER_FILE).open() as file:
@@ -61,13 +68,18 @@ class ModificadorNegativo(Modificador):
                 if not line.startswith(nombre):
                     continue
 
-                ataque, defensa, vida_maxima = map(float, line.split(";")[1:])
+                ataque, defensa, vida_maxima = read_input(
+                    [str, int, float, int], ";", line
+                )[1:]
 
                 super().__init__(nombre, ataque, defensa, vida_maxima)
                 return
 
     @staticmethod
     def get_modifiers() -> list[str]:
+        """
+        Returns a list of all negative modifiers names.
+        """
         names = []
 
         with Path(DATA_FOLDER, NEGATIVE_MODIFIER_FILE).open() as file:

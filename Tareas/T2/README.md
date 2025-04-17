@@ -190,17 +190,16 @@ Por otro lado, los módulos que fueron creados fueron los siguientes:
 1. `parametros`: Contiene a las constantes `EASY`, `NORMAL`, `HARD`, `DIFICULTIES`, `FILES_BY_DIFICULTIES`, `BRANCHES_FILE`, `DATA_FOLDER`, `DINERO_INICIAL`, `DINERO_CACTOOS`, `GANANCIA_POR_RONDA`, `POSITIVE_MODIFIER_FILE`, `NEGATIVE_MODIFIER_FILE`, `SAVES_FOLDER`, `DEFENSA_MINIMA`, `DEFENSA_MAXIMA`.
 
 2. `utils.choice`: Contiene la función `event_happens`.
-3. `utils.id`: Contiene la función `create_id_generator` (la función no ocupa generadores).
-4. `utils.input`: Contiene las funciones `read_input` y `read_inputs`.
-5. `utils.menu`: Contiene las funciones `get_number_in_range`, `get_number_in_set`, `print_menu`, `ask_yes_no`.
-6. `utils.read_save`: Contiene las funciones `read_branches` y `read_save`.
-7. `utils.read`: Contiene las funciones `create_branch`, `read_branches`, `read_trees` y `generate_id`.
-8. `utils.save_game`: Contiene la función `save_game`.
-9. `utils.terminal`: Contiene las funciones `erase_terminal`, `print_title`, `create_table`, `continue_input` y `exit_message`.
-10. `clases.ramas`: Contiene las clases `Rama`, `Ficus`, `Celery`, `Hyedrid`, `Paalm`, `Alovelis`, `Pine` y `Cactoos`. También contiene la función `get_branch_class`.
-11. `clases.modificador`: Contiene las clases `Modificador`, `ModificadorPositivo` y `ModificadorNegativo`.
-12. `clases.game`: Contiene la clase `Game`.
-13. `clases.arbol`: Contiene la clase `Arbol`.
+3. `utils.input`: Contiene la función `read_input`.
+4. `utils.menu`: Contiene las funciones `get_number_in_range`, `get_number_in_set`, `print_menu`, `ask_yes_no`.
+5. `utils.read_save`: Contiene las funciones `read_branches` y `read_save`.
+6. `utils.read`: Contiene las funciones `create_branch`, `read_branches`, `read_trees`.
+7. `utils.save_game`: Contiene la función `save_game`.
+8. `utils.terminal`: Contiene las funciones `erase_terminal`, `print_title`, `create_table`, `continue_input` y `exit_message`.
+9. `clases.ramas`: Contiene las clases `Rama`, `Ficus`, `Celery`, `Hyedrid`, `Paalm`, `Alovelis`, `Pine` y `Cactoos`. También contiene la función `get_branch_class`.
+10. `clases.modificador`: Contiene las clases `Modificador`, `ModificadorPositivo` y `ModificadorNegativo`.
+11. `clases.game`: Contiene la clase `Game`.
+12. `clases.arbol`: Contiene la clase `Arbol`.
 
 ## Supuestos y consideraciones adicionales :thinking:
 

@@ -47,9 +47,11 @@ def print_menu(
     min: int,
     max: int,
     exit_text: str = None,
-):
+) -> int:
     """ "
-    Function extracted doing modifications from my "Tarea 1”; that is, a function by Enzo Vivallo (GitHub: Masterkrab), retrieved on April 17, 2025, from https://github.com/IIC2233/MasterKrab-iic2233-2025-1/blob/main/Tareas/T1/main.py
+    Function extracted doing modifications from my "Tarea 1”; that is, a function by
+    Enzo Vivallo (GitHub: Masterkrab), retrieved on April 17, 2025, from
+    https://github.com/IIC2233/MasterKrab-iic2233-2025-1/blob/main/Tareas/T1/main.py
     """
 
     if isinstance(table[0], str):
@@ -83,7 +85,9 @@ def print_menu(
 
 def ask_yes_no(question: str) -> bool:
     """ "
-    Function extracted without modifications from my "Tarea 1”; that is, a function by Enzo Vivallo (GitHub: Masterkrab), retrieved on April 17, 2025, from https://github.com/IIC2233/MasterKrab-iic2233-2025-1/blob/main/Tareas/T1/main.py
+    Function extracted without modifications from my "Tarea 1”; that is, a function by
+    Enzo Vivallo (GitHub: Masterkrab), retrieved on April 17, 2025, from
+    https://github.com/IIC2233/MasterKrab-iic2233-2025-1/blob/main/Tareas/T1/main.py
     """
 
     print()

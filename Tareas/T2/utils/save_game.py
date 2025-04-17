@@ -1,7 +1,6 @@
 from clases.modificador import ModificadorPositivo, ModificadorNegativo
 from clases.arbol import Arbol
 
-from utils.id import create_id_generator
 
 from parametros import SAVES_FOLDER
 
@@ -11,7 +10,7 @@ from pathlib import Path
 def save_game(
     dinero: int, round: int, player_tree: Arbol, enemy_tree: Arbol, filename: str
 ):
-    generate_id = create_id_generator()
+    id = 1
 
     id_by_positive_modifier_name = dict()
     id_by_negative_modifier_name = dict()
@@ -20,10 +19,12 @@ def save_game(
     negative_modifiers = ModificadorNegativo.get_modifiers()
 
     for name in positive_modifiers:
-        id_by_positive_modifier_name[name] = generate_id()
+        id_by_positive_modifier_name[name] = id
+        id += 1
 
     for name in negative_modifiers:
-        id_by_negative_modifier_name[name] = generate_id()
+        id_by_negative_modifier_name[name] = id
+        id += 1
 
     with Path(SAVES_FOLDER, filename).open("w") as file:
         # Saves positive modifiers types with id
@@ -50,7 +51,10 @@ def save_game(
             name_parent_id = parent.id if parent else -1
 
             file.write(
-                f"{branch.id};{branch.nombre};{name_parent_id};{len(branch.modificadores)};{branch.salud};{branch._vitalidad_maxima};{branch.defensa};{branch.dano_base}\n"
+                f"{branch.id};{branch.nombre};{name_parent_id};\
+                    {len(branch.modificadores)};{branch.salud};\
+                        {branch._vitalidad_maxima};{branch.defensa};\
+                            {branch.dano_base}\n"
             )
 
             for modifier in branch.modificadores:
@@ -68,7 +72,10 @@ def save_game(
             name_parent_id = parent.id if parent else -1
 
             file.write(
-                f"{branch.id};{branch.nombre};{name_parent_id};{len(branch.modificadores)};{branch.salud};{branch._vitalidad_maxima};{branch.defensa};{branch.dano_base}\n"
+                f"{branch.id};{branch.nombre};{name_parent_id};\
+                    {len(branch.modificadores)};{branch.salud};\
+                        {branch._vitalidad_maxima};{branch.defensa};\
+                            {branch.dano_base}\n"
             )
 
             for modifier in branch.modificadores:
