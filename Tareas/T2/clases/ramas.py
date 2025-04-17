@@ -168,14 +168,12 @@ class Rama(ABC):
     def pasar_ronda(self):
         has_new_negative_modifer = event_happens(1 - self.resistencia_a_plagas)
 
-        if not has_new_negative_modifer:
-            return
+        if has_new_negative_modifer:
+            name = choice(ModificadorNegativo.get_modifiers())
 
-        name = choice(ModificadorNegativo.get_modifiers())
+            print(f"La rama [{self.id}] {self.nombre} se ha contagiado de {name}.")
 
-        print(f"La rama [{self.id}] {self.nombre} se ha contagiado de {name}.")
-
-        self.cargar_modificador(ModificadorNegativo(name))
+            self.cargar_modificador(ModificadorNegativo(name))
 
         self.started_attack = False
 
