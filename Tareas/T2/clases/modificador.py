@@ -1,4 +1,5 @@
 from pathlib import Path
+from abc import ABC
 
 from parametros import (
     DATA_FOLDER,
@@ -7,7 +8,7 @@ from parametros import (
 )
 
 
-class Modificador:
+class Modificador(ABC):
     def __init__(self, nombre: str, ataque: int, defensa: float, vida_maxima: int):
         self.nombre = nombre
         self.ataque = ataque
@@ -52,7 +53,7 @@ class ModificadorNegativo(Modificador):
                 ataque, defensa, vida_maxima = map(float, line.split(";")[1:])
 
                 super().__init__(nombre, ataque, defensa, vida_maxima)
-                break
+                return
 
     @staticmethod
     def get_modifiers() -> list[str]:

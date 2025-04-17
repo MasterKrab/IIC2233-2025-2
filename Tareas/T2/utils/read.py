@@ -1,37 +1,18 @@
 from pathlib import Path
 from clases.arbol import Arbol
-from clases.ramas import (
-    Rama,
-    Ficus,
-    Celery,
-    Hyedrid,
-    Paalm,
-    Alovelis,
-    Pine,
-    Cactoos,
-)
+from clases.ramas import Rama, get_branch_class
 
 from parametros import DATA_FOLDER, FILES_BY_DIFICULTIES
-
-
-def create_id_generator():
-    id = 0
-
-    def increment_id():
-        nonlocal id
-        id += 1
-        return id
-
-    return increment_id
+from utils.id import create_id_generator
 
 
 generate_id = create_id_generator()
 
 
 def create_branch(name: str) -> Rama:
-    for rama in (Ficus, Celery, Hyedrid, Paalm, Alovelis, Pine, Cactoos):
-        if rama.nombre.lower() == name.lower():
-            return rama(generate_id())
+    branch = get_branch_class(name)
+
+    return branch(generate_id())
 
 
 def read_branches(branches_text: str) -> list[Rama]:

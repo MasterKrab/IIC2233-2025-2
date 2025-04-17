@@ -18,6 +18,29 @@ def get_number_in_range(text: str, min: int, max: int) -> int:
         return number
 
 
+def get_number_in_set(text: str, numbers: set[int]) -> int:
+    numbers_text = []
+
+    for number in numbers:
+        numbers_text.append(str(number))
+
+    while True:
+        number = input(text)
+
+        try:
+            number = int(number)
+        except ValueError:
+            print("El valor ingresado no es un número.")
+            continue
+
+        if number not in numbers:
+            print("El valor ingresado no esta en el conjunto de números válidos.")
+            print(f"Los números válidos son: {', '.join(numbers_text)}.")
+            continue
+
+        return number
+
+
 def print_menu(
     table: list[str, str] | list[str],
     choose_text: str,

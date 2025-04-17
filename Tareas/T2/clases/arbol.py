@@ -9,7 +9,7 @@ class Arbol:
         self.nombre = nombre
 
     def cargar_modificador(self, rama: Rama, modificador: Modificador):
-        rama.cargar_modificador(Modificador)
+        rama.cargar_modificador(modificador)
 
     def atacar(self, rama: Rama):
         return rama.atacar()
@@ -76,6 +76,15 @@ class Arbol:
     @property
     def max_deep(self) -> int:
         return max(self.branches_by_level, key=lambda x: x[0])[0]
+
+    @property
+    def branches_ids(self) -> set[int]:
+        ids = set()
+
+        for branch in self.branches:
+            ids.add(branch.id)
+
+        return ids
 
     def get_random_deeper_branch(self) -> Rama:
         branches = self.branches_by_level

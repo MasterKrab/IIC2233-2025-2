@@ -1,10 +1,13 @@
+from copy import deepcopy
 from parametros import DINERO_INICIAL, GANANCIA_POR_RONDA
 
 from clases.arbol import Arbol
 from clases.modificador import ModificadorPositivo
 
 from utils.terminal import erase_terminal, print_title, continue_input
-from utils.menu import print_menu, get_number_in_range
+from utils.menu import print_menu, get_number_in_set
+
+from utils.save_game import save_game
 
 from random import randint
 
@@ -49,10 +52,9 @@ class Game:
             if answer == 1:
                 print(self.player_tree)
 
-                player_choose = get_number_in_range(
+                player_choose = get_number_in_set(
                     "¿Con cuál rama quieres atacar? Ingrese el número de la rama: ",
-                    1,
-                    len(self.player_tree.branches),
+                    self.player_tree.branches_ids,
                 )
 
                 branch = self.player_tree.branches[player_choose - 1]
@@ -85,12 +87,24 @@ class Game:
 
             if answer == 3:
                 self.store()
+                continue
 
             if answer == 4:
                 print(self.player_tree)
 
             if answer == 5:
                 print(self.enemy_tree.resumir_arbol())
+
+            if answer == 6:
+                print("Guardando partida...")
+                save_game(
+                    self.dinero,
+                    self.round,
+                    self.player_tree,
+                    self.enemy_tree,
+                    "save.txt",
+                )
+                print("Partida guardada!")
 
             if answer == 7:
                 print("Saliendo del juego, gracias por jugar.")
@@ -122,7 +136,7 @@ class Game:
             if answer == len(options) + 1:
                 break
 
-            modifier = modifiers[answer - 1]
+            modifier = deepcopy(modifiers[answer - 1])
 
             if self.dinero >= modifier.precio:
                 self.dinero -= modifier.precio
@@ -131,15 +145,14 @@ class Game:
 
                 print(self.player_tree)
 
-                branch_choose = get_number_in_range(
+                branch_choose = get_number_in_set(
                     "Ingrese el número de la rama a la que quieres aplicar el modificador: ",
-                    1,
-                    len(self.player_tree.branches),
+                    self.player_tree.branches_ids,
                 )
 
                 branch = self.player_tree.branches[branch_choose - 1]
 
-                self.player_tree.cargar_modificador(branch, modifier)
+                self.player_tree.cargar_modificador(branch, deepcopy(modifier))
 
             else:
                 print("No tienes suficiente dinero para comprar este modificador.")
