@@ -1,6 +1,6 @@
 from clases.modificador import ModificadorPositivo, ModificadorNegativo
 from clases.arbol import Arbol
-from clases.ramas import Rama, get_branch_class
+from clases.ramas import Rama, get_branch_class, Hyedrid
 from clases.game import Game
 
 from utils.input import read_input, read_inputs
@@ -49,27 +49,23 @@ def read_branches(
         branch._defensa = defensa
         branch.dano_base = dano_base
 
-        if modifiers_amount > 0:
-            ids = read_inputs(int, ";", file.readline())
+        for _ in range(modifiers_amount):
+            type, id = read_input([str, int], ";", file.readline())
 
-            # Reverse for FIFO
-            ids.reverse()
+            if type == "+":
+                name = positive_modifier_name_by_id[id]
 
-            for id in ids:
-                if id in positive_modifier_name_by_id:
-                    name = positive_modifier_name_by_id[id]
-
-                    if hasattr(branch, "_modificadores"):
-                        branch._modificadores.append(ModificadorPositivo(name))
-                    else:
-                        branch.modificador = ModificadorPositivo(name)
+                if isinstance(branch, Hyedrid):
+                    branch._modificadores.append(ModificadorPositivo(name))
                 else:
-                    name = negative_modifier_name_by_id[id]
+                    branch.modificador = ModificadorPositivo(name)
+            else:
+                name = negative_modifier_name_by_id[id]
 
-                    if hasattr(branch, "_modificadores"):
-                        branch._modificadores.append(ModificadorNegativo(name))
-                    else:
-                        branch.modificador = ModificadorNegativo(name)
+                if isinstance(branch, Hyedrid):
+                    branch._modificadores.append(ModificadorNegativo(name))
+                else:
+                    branch.modificador = ModificadorNegativo(name)
 
     for branch in branches:
         if parents[branch.id] == -1:

@@ -4,7 +4,8 @@ from clases.modificador import Modificador
 from utils.id import create_id_generator
 
 from copy import deepcopy
-from random import randint
+from random import choice
+from typing import Self
 
 
 class Arbol:
@@ -22,12 +23,6 @@ class Arbol:
     def pasar_ronda(self):
         for rama in self.branches:
             rama.pasar_ronda()
-
-            if hasattr("money", rama):
-                self.dinero += rama.extract_money()
-
-    def resumir_arbol(self) -> str:
-        pass
 
     def presentarse(self):
         text = ""
@@ -70,7 +65,7 @@ class Arbol:
         return get_branches(self.rama_principal)
 
     @property
-    def branches_by_level(self) -> list[Rama]:
+    def branches_by_level(self) -> list[tuple[int, Rama]]:
         def get_branches(rama: Rama, level: int = 0):
             branches = [(level, rama)]
 
@@ -83,7 +78,7 @@ class Arbol:
 
     @property
     def max_deep(self) -> int:
-        return max(self.branches_by_level, key=lambda x: x[0])[0]
+        return max([branch[0] for branch in self.branches_by_level])
 
     @property
     def branches_ids(self) -> set[int]:
@@ -95,11 +90,13 @@ class Arbol:
         return ids
 
     def get_random_deeper_branch(self) -> Rama:
-        branches = self.branches_by_level
+        deeper_branches = []
 
-        deeper_branches = list(filter(lambda x: x[0] == self.max_deep, branches))
+        for branch in self.branches_by_level:
+            if branch[0] == self.max_deep:
+                deeper_branches.append(branch)
 
-        return deeper_branches[randint(0, len(deeper_branches) - 1)][1]
+        return choice(deeper_branches)
 
     def find_parent(self, target_branch: Rama) -> Rama | None:
         def find_parent(rama: Rama):
@@ -164,7 +161,7 @@ class Arbol:
 
         return f"{self.nombre}, {len(self.branches)} ramas, {total_health} salud, {average_damage} daño promedio"
 
-    def copy(self, id_start):
+    def copy(self, id_start) -> Self:
         generate_id = create_id_generator(id_start)
 
         tree_copy = deepcopy(self)

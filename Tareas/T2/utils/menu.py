@@ -76,3 +76,22 @@ def print_menu(
             continue
 
         return number
+
+
+def ask_yes_no(question: str) -> bool:
+    print()
+
+    while True:
+        answer = input(f"{question} (Si/No): ").strip().lower()
+
+        if not answer:
+            print("Debe ingresar una opción.")
+            continue
+
+        if answer == "s" or answer == "si":
+            return True
+
+        if answer == "n" or answer == "no":
+            return False
+
+        print("Respuesta no válida.")

@@ -1,9 +1,6 @@
-from pathlib import Path
-from typing import Self
-from abc import ABC
 from clases.modificador import Modificador, ModificadorNegativo
+
 from utils.choice import event_happens
-from random import choice
 
 from parametros import (
     DATA_FOLDER,
@@ -12,6 +9,11 @@ from parametros import (
     DEFENSA_MINIMA,
     DEFENSA_MAXIMA,
 )
+
+from pathlib import Path
+from typing import Self
+from abc import ABC
+from random import choice
 
 
 class Rama(ABC):
@@ -83,14 +85,23 @@ class Rama(ABC):
         self._salud = max(0, min(salud, self.vitalidad_maxima))
 
     def cargar_modificador(self, modificador: Modificador):
+        modifier = self.modificador
+        self.modificador = None
+
+        if modifier is not None and self.salud == 0:
+            print(
+                f"La rama ha muerto al descartar el modificador {modifier} (por tanto, no se puede cargar modificador)."
+            )
+            return
+
         if self.modificador:
             print(
-                f"En la rama [{self.id}] {self.nombre} el modificador {self.modificadores[0].nombre} ha sido reemplazado por el modificador {modificador.nombre}."
+                f"En la rama [{self.id}] {self.nombre} el modificador {self.modificador} ha sido reemplazado por el modificador {modificador}."
             )
         else:
             print(
                 f"En la rama [{self.id}] {self.nombre} se ha cargado el modificador:",
-                modificador.nombre,
+                modificador,
             )
 
         self.modificador = modificador
@@ -161,9 +172,9 @@ class Rama(ABC):
 
     def presentarse(self):
         if self.modificadores:
-            modifiers_names = [modifier.nombre for modifier in self.modificadores]
+            modifiers = [str(modifier) for modifier in self.modificadores]
 
-            return f"{self.nombre}, Vida: {self.salud}/{self.vitalidad_maxima}, Daño base: {self.dano_base}, Defensa: {self.defensa}, Resistencia a plagas: {self.resistencia_a_plagas}, Modificadores: {', '.join(modifiers_names)}."
+            return f"{self.nombre}, Vida: {self.salud}/{self.vitalidad_maxima}, Daño base: {self.dano_base}, Defensa: {self.defensa}, Resistencia a plagas: {self.resistencia_a_plagas}, Modificadores: {', '.join(modifiers)}."
 
         return f"{self.nombre}, Vida: {self.salud}/{self.vitalidad_maxima}, Daño base: {self.dano_base}, Defensa: {self.defensa}, Resistencia a plagas: {self.resistencia_a_plagas}."
 
@@ -235,6 +246,13 @@ class Hyedrid(Rama):
     def cargar_modificador(self, modificador: Modificador):
         if len(self.modificadores) >= 2:
             removed = self._modificadores.pop(0)
+
+            if self.salud == 0:
+                print(
+                    f"La rama ha muerto al descartar el modificador {removed.nombre} (por tanto, no se puede cargar modificador)."
+                )
+                return
+
             print(
                 f"En la rama [{self.id}] {self.nombre} el modificador {removed.nombre} ha sido descartado."
             )

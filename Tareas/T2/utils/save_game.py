@@ -53,17 +53,11 @@ def save_game(
                 f"{branch.id};{branch.nombre};{name_parent_id};{len(branch.modificadores)};{branch.salud};{branch._vitalidad_maxima};{branch.defensa};{branch.dano_base}\n"
             )
 
-            if branch.modificadores:
-                ids = []
-
-                for modifier in branch.modificadores:
-                    if isinstance(modifier, ModificadorPositivo):
-                        ids.append(f"{id_by_positive_modifier_name[modifier.nombre]}")
-                    else:
-                        ids.append(f"{id_by_negative_modifier_name[modifier.nombre]}")
-
-                file.write(";".join(ids))
-                file.write("\n")
+            for modifier in branch.modificadores:
+                if isinstance(modifier, ModificadorPositivo):
+                    file.write(f"+;{id_by_positive_modifier_name[modifier.nombre]}\n")
+                else:
+                    file.write(f"-;{id_by_negative_modifier_name[modifier.nombre]}\n")
 
         # Saves enemy tree
         file.write(f"{enemy_tree.nombre};{len(enemy_tree.branches)}\n")
@@ -77,14 +71,8 @@ def save_game(
                 f"{branch.id};{branch.nombre};{name_parent_id};{len(branch.modificadores)};{branch.salud};{branch._vitalidad_maxima};{branch.defensa};{branch.dano_base}\n"
             )
 
-            if branch.modificadores:
-                ids = []
-
-                for modifier in branch.modificadores:
-                    if isinstance(modifier, ModificadorPositivo):
-                        ids.append(f"{id_by_positive_modifier_name[modifier.nombre]}")
-                    else:
-                        ids.append(f"{id_by_negative_modifier_name[modifier.nombre]}")
-
-                file.write(";".join(ids))
-                file.write("\n")
+            for modifier in branch.modificadores:
+                if isinstance(modifier, ModificadorPositivo):
+                    file.write(f"+;{id_by_positive_modifier_name[modifier.nombre]}\n")
+                else:
+                    file.write(f"-;{id_by_negative_modifier_name[modifier.nombre]}\n")

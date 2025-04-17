@@ -1,14 +1,15 @@
-from copy import deepcopy
-from random import randint
-from pathlib import Path
-import sys
-
 from clases.game import Game
+
 from utils.read import read_trees
 from utils.terminal import print_title, continue_input
 from utils.menu import print_menu
 from utils.read_save import read_save
+
 from parametros import DIFICULTIES, SAVES_FOLDER
+
+from random import choice
+from pathlib import Path
+import sys
 
 
 def main():
@@ -53,13 +54,17 @@ def main():
         f"Has seleccionado el árbol guerrero {player_tree.nombre} con {len(player_tree.branches)} ramas."
     )
 
-    enemy_tree = trees[randint(0, len(trees) - 1)].copy(
-        max(player_tree.branches_ids) + 1
-    )
+    print(player_tree.resumir_arbol())
+
+    enemy_tree = choice(trees).copy(max(player_tree.branches_ids) + 1)
 
     print(
         f"El árbol enemigo es {enemy_tree.nombre} con {len(enemy_tree.branches)} ramas."
     )
+
+    print(enemy_tree.resumir_arbol())
+
+    print("¡Bienvenido a DCConquista de Yggdrasil!")
 
     continue_input()
 

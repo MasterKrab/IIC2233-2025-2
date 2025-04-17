@@ -1,9 +1,11 @@
-from pathlib import Path
 from clases.arbol import Arbol
 from clases.ramas import Rama, get_branch_class
 
-from parametros import DATA_FOLDER, FILES_BY_DIFICULTIES
 from utils.id import create_id_generator
+
+from parametros import DATA_FOLDER, FILES_BY_DIFICULTIES
+
+from pathlib import Path
 
 
 generate_id = create_id_generator()

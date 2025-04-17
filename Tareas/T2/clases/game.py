@@ -1,12 +1,11 @@
-
-
 from clases.arbol import Arbol
+from clases.ramas import Cactoos
 from clases.modificador import ModificadorPositivo
 
 from utils.terminal import erase_terminal, print_title, continue_input, exit_message
-from utils.menu import print_menu, get_number_in_set
-
+from utils.menu import print_menu, get_number_in_set, ask_yes_no
 from utils.save_game import save_game
+
 from parametros import DINERO_INICIAL, GANANCIA_POR_RONDA
 
 from random import choice
@@ -97,6 +96,10 @@ class Game:
                 self.dinero += GANANCIA_POR_RONDA
                 print(f"Ganancia por ronda: ${GANANCIA_POR_RONDA}")
 
+                for branch in self.player_tree.branches:
+                    if isinstance(branch, Cactoos):
+                        self.dinero += branch.extract_money()
+
             if answer == 3:
                 self.store()
                 continue
@@ -108,7 +111,8 @@ class Game:
                 print(self.enemy_tree.resumir_arbol())
 
             if answer == 6:
-                filename = f"save-{datetime.now().isoformat()}.txt"
+                timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+                filename = f"save-{timestamp}.txt"
 
                 print("Guardando partida...")
                 save_game(
@@ -116,6 +120,10 @@ class Game:
                 )
                 print("Partida guardada!")
                 print(f"Nombre de archivo de guardado: {filename}")
+
+                if ask_yes_no("¿Salir de la partida?"):
+                    exit_message()
+                    return
 
             if answer == 7:
                 exit_message()
