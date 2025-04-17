@@ -47,13 +47,15 @@ def main():
         len(trees),
     )
 
-    player_tree = deepcopy(trees[answer - 1])
+    player_tree = trees[answer - 1].copy(1)
 
     print(
         f"Has seleccionado el árbol guerrero {player_tree.nombre} con {len(player_tree.branches)} ramas."
     )
 
-    enemy_tree = deepcopy(trees[randint(0, len(trees) - 1)])
+    enemy_tree = trees[randint(0, len(trees) - 1)].copy(
+        max(player_tree.branches_ids) + 1
+    )
 
     print(
         f"El árbol enemigo es {enemy_tree.nombre} con {len(enemy_tree.branches)} ramas."

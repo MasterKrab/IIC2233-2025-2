@@ -1,5 +1,5 @@
-def create_id_generator():
-    id = 0
+def create_id_generator(start: int = 1):
+    id = start - 1
 
     def increment_id():
         nonlocal id

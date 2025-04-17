@@ -25,3 +25,6 @@ POSITIVE_MODIFIER_FILE = "modificadores.txt"
 NEGATIVE_MODIFIER_FILE = "modificadores_negativos.txt"
 
 SAVES_FOLDER = "saves"
+
+DEFENSA_MINIMA = -0.5
+DEFENSA_MAXIMA = 0.5

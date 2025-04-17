@@ -1,5 +1,4 @@
-from copy import deepcopy
-from parametros import DINERO_INICIAL, GANANCIA_POR_RONDA
+
 
 from clases.arbol import Arbol
 from clases.modificador import ModificadorPositivo
@@ -8,8 +7,11 @@ from utils.terminal import erase_terminal, print_title, continue_input, exit_mes
 from utils.menu import print_menu, get_number_in_set
 
 from utils.save_game import save_game
+from parametros import DINERO_INICIAL, GANANCIA_POR_RONDA
 
-from random import randint
+from random import choice
+from datetime import datetime
+from copy import deepcopy
 
 
 class Game:
@@ -17,7 +19,7 @@ class Game:
         self.player_tree = player_tree
         self.enemy_tree = enemy_tree
         self.dinero = DINERO_INICIAL
-        self.round = 0
+        self.round = 1
 
     def pasar_ronda(self):
         self.round += 1
@@ -57,12 +59,12 @@ class Game:
                     self.player_tree.branches_ids,
                 )
 
-                branch = self.player_tree.branches[player_choose - 1]
+                player_branch = self.player_tree.find_by_id(player_choose)
 
-                player_damage = self.player_tree.atacar(branch)
+                player_damage = self.player_tree.atacar(player_branch)
 
                 print(
-                    f"La rama [{branch.id}] {branch.nombre} ha hecho {player_damage} de daño."
+                    f"La rama [{player_branch.id}] {player_branch.nombre} ha hecho {player_damage} de daño."
                 )
 
                 self.enemy_tree.recibir_dano(player_damage)
@@ -73,14 +75,12 @@ class Game:
                     exit_message()
                     return
 
-                enemy_choose = self.enemy_tree.branches[
-                    randint(0, len(self.enemy_tree.branches) - 1)
-                ]
+                enemy_branch = choice(self.enemy_tree.branches)
 
-                enemy_damage = self.enemy_tree.atacar(enemy_choose)
+                enemy_damage = self.enemy_tree.atacar(enemy_branch)
 
                 print(
-                    f"La rama [{enemy_choose.id}] {enemy_choose.nombre} ha hecho {enemy_damage} de daño."
+                    f"La rama [{enemy_branch.id}] {enemy_branch.nombre} ha hecho {enemy_damage} de daño."
                 )
 
                 self.player_tree.recibir_dano(enemy_damage)
@@ -108,15 +108,14 @@ class Game:
                 print(self.enemy_tree.resumir_arbol())
 
             if answer == 6:
+                filename = f"save-{datetime.now().isoformat()}.txt"
+
                 print("Guardando partida...")
                 save_game(
-                    self.dinero,
-                    self.round,
-                    self.player_tree,
-                    self.enemy_tree,
-                    "save.txt",
+                    self.dinero, self.round, self.player_tree, self.enemy_tree, filename
                 )
                 print("Partida guardada!")
+                print(f"Nombre de archivo de guardado: {filename}")
 
             if answer == 7:
                 exit_message()
@@ -162,7 +161,7 @@ class Game:
                     self.player_tree.branches_ids,
                 )
 
-                branch = self.player_tree.branches[branch_choose - 1]
+                branch = self.player_tree.find_by_id(branch_choose)
 
                 self.player_tree.cargar_modificador(branch, deepcopy(modifier))
 

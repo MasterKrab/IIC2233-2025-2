@@ -8,10 +8,14 @@ from utils.input import read_input, read_inputs
 from parametros import SAVES_FOLDER
 
 from pathlib import Path
+from io import TextIOWrapper
 
 
 def read_branches(
-    amount: int, positive_modifier_name_by_id, negative_modifier_name_by_id, file
+    amount: int,
+    positive_modifier_name_by_id,
+    negative_modifier_name_by_id,
+    file: TextIOWrapper,
 ) -> Rama:
     parents = dict()
     branch_by_id = dict()

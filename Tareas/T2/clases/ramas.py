@@ -9,6 +9,8 @@ from parametros import (
     DATA_FOLDER,
     BRANCHES_FILE,
     DINERO_CACTOOS,
+    DEFENSA_MINIMA,
+    DEFENSA_MAXIMA,
 )
 
 
@@ -16,14 +18,15 @@ class Rama(ABC):
     def __init__(self, nombre: str, id: int, ramas_hijas: list[Self] = None):
         self.nombre = nombre
         self.ramas_hijas = ramas_hijas or []
-        self.id = id
 
+        self.id = id
         self.modificador = None
 
         self._vitalidad_maxima = 0
         self._salud = 0
         self._defensa = 0
         self.resistencia_a_plagas = 0
+        self.started_attack = False
 
         with Path(DATA_FOLDER, BRANCHES_FILE).open() as file:
             for line in file:
@@ -52,7 +55,7 @@ class Rama(ABC):
         for modificador in self.modificadores:
             value += modificador.vida_maxima
 
-        return value
+        return int(value)
 
     @property
     def defensa(self) -> int:
@@ -61,18 +64,22 @@ class Rama(ABC):
         for modificador in self.modificadores:
             value += modificador.defensa
 
-        return max(-0.5, min(value, 0.5))
+        return max(DEFENSA_MINIMA, min(value, DEFENSA_MAXIMA))
 
     @defensa.setter
     def defensa(self, defensa: int) -> int:
-        self._defensa = max(-0.5, min(defensa, 0.5))
+        self._defensa = max(DEFENSA_MINIMA, min(defensa, DEFENSA_MAXIMA))
 
     @property
     def salud(self) -> int:
+        # Make sure it not more than max health
+        self._salud = max(0, min(self._salud, self.vitalidad_maxima))
+
         return self._salud
 
     @salud.setter
     def salud(self, salud: int):
+        # Make sure it not more than max health
         self._salud = max(0, min(salud, self.vitalidad_maxima))
 
     def cargar_modificador(self, modificador: Modificador):
@@ -108,8 +115,9 @@ class Rama(ABC):
 
         return []
 
-    def atacar(self) -> int:
+    def atacar(self, started_attack: bool = False) -> int:
         damage = self.dano_base
+        self.started_attack = started_attack
 
         for branch in self.all_subtree_branches:
             damage += branch.atacar()
@@ -149,15 +157,15 @@ class Rama(ABC):
 
         self.cargar_modificador(ModificadorNegativo(name))
 
-        print("")
+        self.started_attack = False
 
     def presentarse(self):
         if self.modificadores:
             modifiers_names = [modifier.nombre for modifier in self.modificadores]
 
-            return f"{self.nombre}, Vida: {self.salud}/{self.vitalidad_maxima}, dano base: {self.dano_base}, Defensa: {self.defensa}, Modificadores: {', '.join(modifiers_names)}."
+            return f"{self.nombre}, Vida: {self.salud}/{self.vitalidad_maxima}, Daño base: {self.dano_base}, Defensa: {self.defensa}, Resistencia a plagas: {self.resistencia_a_plagas}, Modificadores: {', '.join(modifiers_names)}."
 
-        return f"{self.nombre}, Vida: {self.salud}/{self.vitalidad_maxima}, dano base: {self.dano_base}, Defensa: {self.defensa}."
+        return f"{self.nombre}, Vida: {self.salud}/{self.vitalidad_maxima}, Daño base: {self.dano_base}, Defensa: {self.defensa}, Resistencia a plagas: {self.resistencia_a_plagas}."
 
     def __str__(self) -> str:
         return self.presentarse()
@@ -187,10 +195,10 @@ class Ficus(Rama):
     def pasar_ronda(self):
         super().pasar_ronda()
 
-        self.salud += int((self.vitalidad_maxima - self.salud) * 0.04)
+        self.salud += int(abs(self.vitalidad_maxima - self.salud) * 0.04)
 
         for rama in self.ramas_hijas:
-            self.salud += int((rama.vitalidad_maxima - rama.salud) * 0.04)
+            rama.salud += int(abs(rama.vitalidad_maxima - rama.salud) * 0.04)
 
 
 class Celery(Rama):
@@ -210,15 +218,10 @@ class Celery(Rama):
 
         self.bonus = True
 
-    def atacar(self) -> int:
+    def atacar(self, started_attack: bool = False) -> int:
         self.bonus = False
 
-        return super().atacar()
-
-    def recibir_dano(self, dano) -> int:
-        self.bonus = False
-
-        return super().recibir_dano(dano)
+        return super().atacar(started_attack)
 
 
 class Hyedrid(Rama):
@@ -249,7 +252,7 @@ class Hyedrid(Rama):
 
 class Paalm(Rama):
     efecto = (
-        "Cada vez que esta rama recibe dano y no muere, su defensa aumenta en 0.02."
+        "Cada vez que esta rama recibe daño y no muere, su defensa aumenta en 0.02."
     )
     nombre = "Paalm"
 
@@ -299,13 +302,25 @@ class Cactoos(Rama):
         super().__init__(self.nombre, *args, **kwargs)
 
         self.money = 0
+        self.bonus = True
+
+    def atacar(self, started_attack: bool = False) -> int:
+        self.bonus = not started_attack
+
+        return super().atacar(started_attack)
+
+    def recibir_dano(self, dano) -> int:
+        self.bonus = False
+
+        return super().recibir_dano(dano)
 
     def pasar_ronda(self):
         super().pasar_ronda()
 
-        times = 1 + len(self.ramas_hijas)
+        if self.bonus:
+            self.money += DINERO_CACTOOS * len(self.ramas_hijas)
 
-        self.money += DINERO_CACTOOS * times
+        self.bonus = True
 
     def extract_money(self):
         money = self.money

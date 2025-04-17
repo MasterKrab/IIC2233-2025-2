@@ -1,9 +1,14 @@
 from clases.ramas import Rama
-from random import randint
 from clases.modificador import Modificador
+
+from utils.id import create_id_generator
+
+from copy import deepcopy
+from random import randint
 
 
 class Arbol:
+
     def __init__(self, rama_principal: Rama, nombre: str):
         self.rama_principal = rama_principal
         self.nombre = nombre
@@ -17,6 +22,9 @@ class Arbol:
     def pasar_ronda(self):
         for rama in self.branches:
             rama.pasar_ronda()
+
+            if hasattr("money", rama):
+                self.dinero += rama.extract_money()
 
     def resumir_arbol(self) -> str:
         pass
@@ -111,6 +119,13 @@ class Arbol:
 
         return find_parent(self.rama_principal)
 
+    def find_by_id(self, id: int) -> Rama | None:
+        for branch in self.branches:
+            if branch.id == id:
+                return branch
+
+        return None
+
     def remove_branch(self, target_branch: Rama):
         if target_branch == self.rama_principal:
             self.rama_principal = None
@@ -148,3 +163,13 @@ class Arbol:
         average_damage = total_damage / len(self.branches)
 
         return f"{self.nombre}, {len(self.branches)} ramas, {total_health} salud, {average_damage} daño promedio"
+
+    def copy(self, id_start):
+        generate_id = create_id_generator(id_start)
+
+        tree_copy = deepcopy(self)
+
+        for branch in tree_copy.branches:
+            branch.id = generate_id()
+
+        return tree_copy
