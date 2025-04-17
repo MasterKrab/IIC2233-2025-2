@@ -51,10 +51,10 @@ def save_game(
             name_parent_id = parent.id if parent else -1
 
             file.write(
-                f"{branch.id};{branch.nombre};{name_parent_id};\
-                    {len(branch.modificadores)};{branch.salud};\
-                        {branch._vitalidad_maxima};{branch.defensa};\
-                            {branch.dano_base}\n"
+                f"{branch.id};{branch.nombre};{name_parent_id};"
+                f"{len(branch.modificadores)};{branch.salud};"
+                f"{branch._vitalidad_maxima};{branch.defensa};"
+                f"{branch.dano_base}\n"
             )
 
             for modifier in branch.modificadores:
@@ -72,10 +72,10 @@ def save_game(
             name_parent_id = parent.id if parent else -1
 
             file.write(
-                f"{branch.id};{branch.nombre};{name_parent_id};\
-                    {len(branch.modificadores)};{branch.salud};\
-                        {branch._vitalidad_maxima};{branch.defensa};\
-                            {branch.dano_base}\n"
+                f"{branch.id};{branch.nombre};{name_parent_id};"
+                f"{len(branch.modificadores)};{branch.salud};"
+                f"{branch._vitalidad_maxima};{branch.defensa};"
+                f"{branch.dano_base}\n"
             )
 
             for modifier in branch.modificadores:
