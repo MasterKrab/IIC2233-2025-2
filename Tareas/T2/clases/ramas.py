@@ -135,7 +135,7 @@ class Rama(ABC):
 
         amount = len(self.all_subtree_branches) + 1
 
-        real_damage = round(damage / amount)
+        real_damage = int(damage / amount)
 
         for modificador in self.modificadores:
             real_damage += modificador.ataque
@@ -143,7 +143,7 @@ class Rama(ABC):
         return real_damage
 
     def recibir_dano(self, dano: int) -> int:
-        real_damage = round(dano * (1 - self.defensa))
+        real_damage = int(dano * (1 - self.defensa))
 
         print(f"La rama [{self.id}] {self.nombre} ha recidido {real_damage} de daño")
 
@@ -174,7 +174,7 @@ class Rama(ABC):
         if self.modificadores:
             modifiers = [str(modifier) for modifier in self.modificadores]
 
-            return f"{self.nombre}, Vida: {self.salud}/{self.vitalidad_maxima}, Daño base: {self.dano_base}, Defensa: {self.defensa}, Resistencia a plagas: {self.resistencia_a_plagas}, Modificadores: {', '.join(modifiers)}."
+            return f"{self.nombre}, Vida: {self.salud}/{self.vitalidad_maxima}, Daño base: {self.dano_base}, Defensa: {self.defensa * 100}%, Resistencia a plagas: {self.resistencia_a_plagas * 100}%, Modificadores: {', '.join(modifiers)}."
 
         return f"{self.nombre}, Vida: {self.salud}/{self.vitalidad_maxima}, Daño base: {self.dano_base}, Defensa: {self.defensa}, Resistencia a plagas: {self.resistencia_a_plagas}."
 

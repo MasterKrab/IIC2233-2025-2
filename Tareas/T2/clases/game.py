@@ -33,6 +33,9 @@ class Game:
             print(f"Dinero disponible: ${self.dinero}")
             print(f"Ronda actual: {self.round}")
 
+            print(self.player_tree)
+            print(self.enemy_tree)
+
             options = [
                 "Atacar y pasar ronda",
                 "Pasar ronda sin atacar",

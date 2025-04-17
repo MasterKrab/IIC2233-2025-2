@@ -212,7 +212,9 @@ Por otro lado, los módulos que fueron creados fueron los siguientes:
 
 4. Se reutilizarón partes del código de la tarea 1, algunas fueron copiadas sin cambios y otras fueron modificadas. Los códigos reutilizados fueron citados en el código mismo.
 
-5. La tarea fue desarrollada en un entorno virtual creado con _Conda_ (versión `24.9.2`), instalando _Python_ en su versión `3.11.11`. Se desarrollo en ell sistema operativo `Archcraft x86_64`con _kernel_ `Linux 6.13.8-arch1`.
+5. Se asume un margen de error para los cálculos que involucren _floats_ debido a [los problemas de presición que conllevan](https://docs.python.org/3/tutorial/floatingpoint.html), por ejemplo que la resistencia a plagar se vea afectaba, si la resistencia es `0.8` y hago el cálculo `1 - 0.8` el resultado es `0.19999999999999996` y no `0.2`. Los _floats_ decidí no redondearlos en los apartados donde no se especifica y no afecta realmente al funcionamiento del problema.
+
+6. La tarea fue desarrollada en un entorno virtual creado con _Conda_ (versión `24.9.2`), instalando _Python_ en su versión `3.11.11`. Se desarrollo en ell sistema operativo `Archcraft x86_64`con _kernel_ `Linux 6.13.8-arch1`.
 
 ## Implementación del programa
 
@@ -274,24 +276,24 @@ El árbol del jugador siendo el siguiente:
 ------------------------------
 Baobab del Despertar
 ------------------------------
-[1] Alovelis, Vida: 1600/1720, Daño base: 25, Defensa: -0.1, Resistencia a plagas: 0.8, Modificadores: Avispas Asesinas (Negativo).
+[1] Alovelis, Vida: 1600/1720, Daño base: 25, Defensa: -20.0%, Resistencia a plagas: 80.0%, Modificadores: Avispas Asesinas (Negativo).
   \--subramas-
-  [2] Celery, Vida: 1000/1250, Daño base: 35, Defensa: 0.0, Resistencia a plagas: 0.75, Modificadores: Flor (Positivo).
+  [2] Celery, Vida: 1000/1250, Daño base: 35, Defensa: 0.0%, Resistencia a plagas: 75.0%, Modificadores: Flor (Positivo).
     \--subramas-
-    [3] Alovelis, Vida: 1750/1750, Daño base: 25, Defensa: -0.2, Resistencia a plagas: 0.8, Modificadores: Hongo Parasitario (Negativo).
+    [3] Alovelis, Vida: 1750/1750, Daño base: 25, Defensa: -40.0%, Resistencia a plagas: 80.0%, Modificadores: Hongo Parasitario (Negativo).
       \--subramas-
-      [4] Alovelis, Vida: 1600/1700, Daño base: 25, Defensa: 0.0, Resistencia a plagas: 0.8, Modificadores: Zancudos (Negativo).
+      [4] Alovelis, Vida: 1600/1700, Daño base: 25, Defensa: 0.0%, Resistencia a plagas: 80.0%, Modificadores: Zancudos (Negativo).
         \--subramas-
-        [5] Alovelis, Vida: 1700/1800, Daño base: 25, Defensa: -0.3, Resistencia a plagas: 0.8, Modificadores: Termitas (Negativo).
-        [6] Cactoos, Vida: 700/700, Daño base: 55, Defensa: -0.11, Resistencia a plagas: 0.9, Modificadores: Zancudos (Negativo).
-      [7] Celery, Vida: 1150/1150, Daño base: 35, Defensa: -0.2, Resistencia a plagas: 0.75, Modificadores: Hongo Parasitario (Negativo).
+        [5] Alovelis, Vida: 1700/1800, Daño base: 25, Defensa: -50.0%, Resistencia a plagas: 80.0%, Modificadores: Termitas (Negativo).
+        [6] Cactoos, Vida: 700/700, Daño base: 55, Defensa: -11.0%, Resistencia a plagas: 90.0%, Modificadores: Zancudos (Negativo).
+      [7] Celery, Vida: 1150/1150, Daño base: 35, Defensa: -40.0%, Resistencia a plagas: 75.0%, Modificadores: Hongo Parasitario (Negativo).
         \--subramas-
         [8] Paalm, Vida: 2000/2000, Daño base: 40, Defensa: 0.2, Resistencia a plagas: 0.9.
-        [9] Hyedrid, Vida: 900/900, Daño base: 75, Defensa: -0.4, Resistencia a plagas: 0.95, Modificadores: Espora Tóxica (Positivo), Espora Tóxica (Positivo).
-  [10] Paalm, Vida: 1950/1950, Daño base: 40, Defensa: 0.05000000000000002, Resistencia a plagas: 0.9, Modificadores: Espora Tóxica (Positivo).
-  [11] Celery, Vida: 1000/1200, Daño base: 35, Defensa: 0.0, Resistencia a plagas: 0.75, Modificadores: Gusano Minador (Negativo).
-  [12] Pine, Vida: 800/800, Daño base: 60, Defensa: -0.2, Resistencia a plagas: 0.8, Modificadores: Zancudos (Negativo).
-  [13] Alovelis, Vida: 1800/1800, Daño base: 25, Defensa: 0.0, Resistencia a plagas: 0.8, Modificadores: Gusano Minador (Negativo).
+        [9] Hyedrid, Vida: 900/900, Daño base: 75, Defensa: -50.0%, Resistencia a plagas: 95.0%, Modificadores: Espora Tóxica (Positivo), Espora Tóxica (Positivo).
+  [10] Paalm, Vida: 1950/1950, Daño base: 40, Defensa: -9.999999999999998%, Resistencia a plagas: 90.0%, Modificadores: Espora Tóxica (Positivo).
+  [11] Celery, Vida: 1000/1200, Daño base: 35, Defensa: 0.0%, Resistencia a plagas: 75.0%, Modificadores: Gusano Minador (Negativo).
+  [12] Pine, Vida: 800/800, Daño base: 60, Defensa: -20.0%, Resistencia a plagas: 80.0%, Modificadores: Zancudos (Negativo).
+  [13] Alovelis, Vida: 1800/1800, Daño base: 25, Defensa: 0.0%, Resistencia a plagas: 80.0%, Modificadores: Gusano Minador (Negativo).
 ```
 
 Y el árbol del enemigo siendo el siguiente:
@@ -302,22 +304,22 @@ Baobab del Despertar
 ------------------------------
 [14] Alovelis, Vida: 1800/1800, Daño base: 25, Defensa: 0.0, Resistencia a plagas: 0.8.
   \--subramas-
-  [15] Celery, Vida: 1000/1000, Daño base: 35, Defensa: 0.0, Resistencia a plagas: 0.75, Modificadores: Ácaros Chupadores (Negativo).
+  [15] Celery, Vida: 1000/1000, Daño base: 35, Defensa: 0.0%, Resistencia a plagas: 75.0%, Modificadores: Ácaros Chupadores (Negativo).
     \--subramas-
-    [16] Alovelis, Vida: 1700/1700, Daño base: 25, Defensa: -0.4, Resistencia a plagas: 0.8, Modificadores: Moho Gris (Negativo).
+    [16] Alovelis, Vida: 1700/1700, Daño base: 25, Defensa: -50.0%, Resistencia a plagas: 80.0%, Modificadores: Moho Gris (Negativo).
       \--subramas-
       [17] Alovelis, Vida: 1800/1800, Daño base: 25, Defensa: 0.0, Resistencia a plagas: 0.8.
         \--subramas-
-        [18] Alovelis, Vida: 1800/1800, Daño base: 25, Defensa: 0.0, Resistencia a plagas: 0.8, Modificadores: Gusano Minador (Negativo).
+        [18] Alovelis, Vida: 1800/1800, Daño base: 25, Defensa: 0.0%, Resistencia a plagas: 80.0%, Modificadores: Gusano Minador (Negativo).
         [19] Cactoos, Vida: 800/800, Daño base: 55, Defensa: -0.11, Resistencia a plagas: 0.9.
-      [20] Celery, Vida: 1000/1000, Daño base: 35, Defensa: 0.0, Resistencia a plagas: 0.75, Modificadores: Ácaros Chupadores (Negativo).
+      [20] Celery, Vida: 1000/1000, Daño base: 35, Defensa: 0.0%, Resistencia a plagas: 75.0%, Modificadores: Ácaros Chupadores (Negativo).
         \--subramas-
-        [21] Paalm, Vida: 1920/1920, Daño base: 40, Defensa: 0.1, Resistencia a plagas: 0.9, Modificadores: Avispas Asesinas (Negativo).
+        [21] Paalm, Vida: 1920/1920, Daño base: 40, Defensa: 0.0%, Resistencia a plagas: 90.0%, Modificadores: Avispas Asesinas (Negativo).
         [22] Hyedrid, Vida: 1000/1000, Daño base: 75, Defensa: -0.1, Resistencia a plagas: 0.95.
   [23] Paalm, Vida: 2000/2000, Daño base: 40, Defensa: 0.2, Resistencia a plagas: 0.9.
-  [24] Celery, Vida: 1000/1000, Daño base: 35, Defensa: 0.0, Resistencia a plagas: 0.75, Modificadores: Ácaros Chupadores (Negativo).
+  [24] Celery, Vida: 1000/1000, Daño base: 35, Defensa: 0.0%, Resistencia a plagas: 75.0%, Modificadores: Ácaros Chupadores (Negativo).
   [25] Pine, Vida: 900/900, Daño base: 60, Defensa: -0.2, Resistencia a plagas: 0.8.
-  [26] Alovelis, Vida: 1600/1600, Daño base: 25, Defensa: 0.0, Resistencia a plagas: 0.8, Modificadores: Ácaros Chupadores (Negativo).
+  [26] Alovelis, Vida: 1600/1600, Daño base: 25, Defensa: 0.0%, Resistencia a plagas: 80.0%, Modificadores: Ácaros Chupadores (Negativo).
 ```
 
 El contenido del archivo de guardado con nombre de ejemplo `save-2025-04-17-15-59-44.txt` en la carpeta `saves` sería:
