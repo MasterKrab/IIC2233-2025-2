@@ -1,7 +1,6 @@
 from functools import reduce
 from itertools import product
 from typing import Generator
-from pathlib import Path
 
 from utilidades import Pelicula, Genero
 
@@ -12,7 +11,7 @@ from utilidades import Pelicula, Genero
 
 
 def cargar_peliculas(ruta: str) -> Generator:
-    with Path(*ruta.split("/")).open(encoding="utf-8") as file:
+    with open(ruta, encoding="utf-8") as file:
 
         for line in file.readlines()[1:]:
             id_text, title, director, year_text, average_rating_text = line.split(",")
