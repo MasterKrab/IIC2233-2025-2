@@ -34,7 +34,6 @@ class Cliente:
         print("[Cliente] Conectado al servidor.")
 
         self.socket.connect((self.host, self.port))
-        # self.listen()
 
     def manejar_flujo(self) -> None:
         """
