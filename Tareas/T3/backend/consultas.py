@@ -165,7 +165,37 @@ def producto_mas_popular(
     fecha_final: str,
     ranking: int,
 ) -> Iterable:
-    pass
+    valid_orders_ids = set(
+        map(
+            lambda order: order.id_base_datos,
+            ordenes_entre_fechas(generador_ordenes, fecha_inicial, fecha_final),
+        )
+    )
+
+    valid_items = filter(
+        lambda item: item.id_base_datos_orden in valid_orders_ids,
+        generador_ordenes_items,
+    )
+
+    products_scores = dict()
+
+    for item in valid_items:
+        id = item.id_base_datos_producto
+        products_scores[id] = products_scores.get(id, 0) + item.cantidad_productos
+
+    products = sorted(
+        filter(
+            lambda product: products_scores.get(product.id_base_datos, 0) > 0,
+            generador_productos,
+        ),
+        reverse=True,
+        key=lambda product: (
+            products_scores.get(product.id_base_datos, 0),
+            product.id_base_datos,
+        ),
+    )
+
+    return map(lambda product: product.nombre, products[:ranking])
 
 
 def ordenes_usuario(
