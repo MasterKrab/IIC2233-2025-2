@@ -1,5 +1,6 @@
 from typing import Generator, Iterable
 from pathlib import Path
+from typing import Callable, Generator, TypeVar, Optional
 from utilidades import (
     Usuarios,
     Productos,
@@ -7,6 +8,7 @@ from utilidades import (
     OrdenesItems,
     Proveedor,
     ProveedoresProductos,
+    fecha_actual,
 )
 
 
@@ -20,6 +22,17 @@ def dateToDays(date: str, separator: str = "-"):
     years, months, days = map(int, date.split(separator))
 
     return years * 60 * 60 + months * 60 + days
+
+
+Item = TypeVar("Item")
+
+
+def find(callback: Callable[[Item], bool], generator: Generator) -> Optional[Item]:
+    for item in generator:
+        if callback(item):
+            return item
+
+    return None
 
 
 def cargar_usuarios(path: str) -> Generator:
@@ -204,13 +217,51 @@ def ordenes_usuario(
     generador_ordenes_items: Generator,
     ids_usuario: list,
 ) -> dict:
-    pass
+    amount_products_by_id = dict()
+
+    for product in generador_productos:
+        amount_products_by_id[product.id_base_datos] = product.cantidad_por_unidad
+
+    user_id_by_order_id = dict()
+
+    for order in generador_ordenes:
+        user_id_by_order_id[order.id_base_datos] = order.id_base_datos_usuario
+
+    result = dict()
+
+    for id in ids_usuario:
+        result[id] = dict()
+
+    for item in generador_ordenes_items:
+        amount = (
+            item.cantidad_productos * amount_products_by_id[item.id_base_datos_producto]
+        )
+
+        user_id = user_id_by_order_id[item.id_base_datos_orden]
+
+        if user_id not in ids_usuario:
+            continue
+
+        result[user_id][item.id_base_datos_producto] = (
+            result[user_id].get(item.id_base_datos_producto, 0) + amount
+        )
+
+    return result
 
 
 def valor_orden(
     generador_productos: Generator, generador_ordenes_items: Generator, id_orden: str
 ) -> float:
-    pass
+    order = find(
+        lambda order: order.id_base_datos_orden == id_orden, generador_ordenes_items
+    )
+
+    product = find(
+        lambda product: product.id_base_datos == order.id_base_datos_producto,
+        generador_productos,
+    )
+
+    return order.cantidad_productos * product.precio
 
 
 def proveedores_segun_precio_productos(
@@ -219,7 +270,50 @@ def proveedores_segun_precio_productos(
     generador_proveedor_producto: Generator,
     precio: float,
 ) -> list:
-    pass
+    supplier_name_by_supplier_product_id = dict()
+
+    for supplier_product in generador_proveedor_producto:
+        suplier_id = supplier_product.identificador_del_proveedor
+        supplier_name = supplier_product.nombre_proveedor
+
+        supplier_name_by_supplier_product_id[suplier_id] = supplier_name
+
+    max_cost_by_supplier_name = dict()
+
+    products_amount_by_supplier_name = dict()
+
+    for product in generador_productos:
+        supplier_id = product.identificador_del_proveedor
+
+        if supplier_id not in supplier_name_by_supplier_product_id:
+            continue
+
+        supplier_name = supplier_name_by_supplier_product_id[supplier_id]
+
+        last_price = max_cost_by_supplier_name.get(supplier_name, 0)
+
+        max_cost_by_supplier_name[supplier_name] = max(product.precio, last_price)
+
+        last_amount = products_amount_by_supplier_name.get(supplier_name, 0)
+
+        products_amount_by_supplier_name[supplier_name] = last_amount + 1
+
+    suppliers = filter(
+        lambda supplier: max_cost_by_supplier_name.get(
+            supplier.nombre_proveedor, float("inf")
+        )
+        < precio,
+        generador_proveedores,
+    )
+
+    result = []
+
+    for supplier in suppliers:
+        result.append(
+            (supplier, products_amount_by_supplier_name[supplier.nombre_proveedor])
+        )
+
+    return result
 
 
 def precio_promedio_segun_estado_orden(
