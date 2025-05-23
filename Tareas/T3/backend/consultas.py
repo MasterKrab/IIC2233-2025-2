@@ -22,18 +22,6 @@ def dateToDays(date: str, separator: str = "-"):
     return years * 60 * 60 + months * 60 + days
 
 
-def englishSeparators(line: str):
-    if "," in line:
-        return list(
-            map(
-                englishSeparators,
-                line.split("," if "," in line else "and"),
-            )
-        )
-
-    return line.strip()
-
-
 def cargar_usuarios(path: str) -> Generator:
     with Path(path).open("r", encoding="utf-8") as file:
         next(file)
@@ -104,11 +92,6 @@ def productos_desde_fecha(
 
         return current_days == days or inverso ^ (current_days > days)
 
-    # for product in generador_productos:
-    #     current_days = dateToDays(product.fecha_modificacion)
-
-    #     if current_days == days or inverso ^ current_days < days:
-    #         yield product
     return filter(is_date_in_range, generador_productos)
 
 
@@ -123,12 +106,6 @@ def buscar_orden_por_contenido(
             generador_ordenes_items,
         ),
     )
-    # for item in generador_ordenes_items:
-    #     if (
-    #         item.id_base_datos_producto == id_producto
-    #         and item.cantidad_productos == cantidad
-    #     ):
-    #         yield item.id_base_datos_orden
 
 
 def proveedores_por_estado(generador_proveedores: Generator, estado: str) -> Generator:
@@ -136,9 +113,6 @@ def proveedores_por_estado(generador_proveedores: Generator, estado: str) -> Gen
         lambda supplier: supplier.nombre_proveedor,
         filter(lambda supplier: supplier.estado == estado, generador_proveedores),
     )
-    # for supplier in generador_proveedores:
-    #     if supplier.estado == estado:
-    #         yield supplier.nombre_proveedor
 
 
 def ordenes_segun_estado_orden(
