@@ -1,0 +1,11 @@
+env/
+
+*.csv
+*.txt
+*.zip
+
+data
+tests_publicos
+README_inicial.md
+Enunciado.pdf
+README copy.md
