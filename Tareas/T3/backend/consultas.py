@@ -1,6 +1,7 @@
 from typing import Generator, Iterable
 from pathlib import Path
 from typing import Callable, Generator, TypeVar, Optional
+from collections import defaultdict
 from utilidades import (
     Usuarios,
     Productos,
@@ -9,6 +10,7 @@ from utilidades import (
     Proveedor,
     ProveedoresProductos,
     fecha_actual,
+    cambio_unidad_medida,
 )
 
 
@@ -87,6 +89,10 @@ def cargar_proveedores_productos(path: str) -> Generator:
         for line in file:
             data = line.strip().split(";")
             yield ProveedoresProductos(*data)
+
+
+def extract_state(text: str) -> str:
+    return text.split(" ")[::-1][1].strip().upper()
 
 
 # CONSULTAS
@@ -201,9 +207,8 @@ def producto_mas_popular(
             lambda product: products_scores.get(product.id_base_datos, 0) > 0,
             generador_productos,
         ),
-        reverse=True,
         key=lambda product: (
-            products_scores.get(product.id_base_datos, 0),
+            -products_scores.get(product.id_base_datos, 0),
             product.id_base_datos,
         ),
     )
@@ -252,16 +257,24 @@ def ordenes_usuario(
 def valor_orden(
     generador_productos: Generator, generador_ordenes_items: Generator, id_orden: str
 ) -> float:
-    order = find(
+    products_price_by_id = dict()
+
+    for product in generador_productos:
+        products_price_by_id[product.id_base_datos] = product.precio
+
+    orders = filter(
         lambda order: order.id_base_datos_orden == id_orden, generador_ordenes_items
     )
 
-    product = find(
-        lambda product: product.id_base_datos == order.id_base_datos_producto,
-        generador_productos,
-    )
+    total = 0.0
 
-    return order.cantidad_productos * product.precio
+    for order in orders:
+        total += (
+            products_price_by_id[order.id_base_datos_producto]
+            * order.cantidad_productos
+        )
+
+    return total
 
 
 def proveedores_segun_precio_productos(
@@ -271,16 +284,16 @@ def proveedores_segun_precio_productos(
     precio: float,
 ) -> list:
     supplier_name_by_supplier_product_id = dict()
+    products_amount_by_supplier_name = dict()
 
     for supplier_product in generador_proveedor_producto:
         suplier_id = supplier_product.identificador_del_proveedor
         supplier_name = supplier_product.nombre_proveedor
 
         supplier_name_by_supplier_product_id[suplier_id] = supplier_name
+        products_amount_by_supplier_name[supplier_name] = 0
 
-    max_cost_by_supplier_name = dict()
-
-    products_amount_by_supplier_name = dict()
+    max_cost_by_supplier_name = defaultdict(int)
 
     for product in generador_productos:
         supplier_id = product.identificador_del_proveedor
@@ -290,11 +303,11 @@ def proveedores_segun_precio_productos(
 
         supplier_name = supplier_name_by_supplier_product_id[supplier_id]
 
-        last_price = max_cost_by_supplier_name.get(supplier_name, 0)
+        last_price = max_cost_by_supplier_name[supplier_name]
 
         max_cost_by_supplier_name[supplier_name] = max(product.precio, last_price)
 
-        last_amount = products_amount_by_supplier_name.get(supplier_name, 0)
+        last_amount = products_amount_by_supplier_name[supplier_name]
 
         products_amount_by_supplier_name[supplier_name] = last_amount + 1
 
@@ -322,7 +335,29 @@ def precio_promedio_segun_estado_orden(
     generador_productos: Generator,
     estado_orden: str,
 ) -> float:
-    pass
+    price_by_product_id = dict()
+
+    for product in generador_productos:
+        price_by_product_id[product.id_base_datos] = product.precio
+
+    price_by_order_id = defaultdict(int)
+
+    for order in generador_ordenes_items:
+        price_by_order_id[order.id_base_datos_orden] += (
+            price_by_product_id[order.id_base_datos_producto] * order.cantidad_productos
+        )
+
+    total = 0.0
+    count = 0.0
+
+    for order in ordenes_segun_estado_orden(generador_ordenes, estado_orden):
+        total += price_by_order_id[order.id_base_datos]
+        count += 1
+
+    if count == 0:
+        return 0.0
+
+    return round(total / count, 2)
 
 
 def cantidad_vendida_productos(
@@ -330,13 +365,49 @@ def cantidad_vendida_productos(
     generador_ordenes_items: Generator,
     ids_productos: list,
 ) -> dict:
-    pass
+    unit_amount_by_product_id = dict()
+
+    for product in generador_productos:
+        unit_amount_by_product_id[product.id_base_datos] = product.cantidad_por_unidad
+
+    ids_products = set(ids_productos)
+
+    amount_by_product_id = dict()
+
+    ids_products = set(ids_productos)
+
+    for id in ids_products:
+        amount_by_product_id[id] = 0
+
+    for order in generador_ordenes_items:
+        if order.id_base_datos_producto not in ids_products:
+            continue
+
+        current = (
+            unit_amount_by_product_id[order.id_base_datos_producto]
+            * order.cantidad_productos
+        )
+
+        amount_by_product_id[order.id_base_datos_producto] += current
+
+    return amount_by_product_id
 
 
 def ordenes_dirigidas_al_estado(
     generador_ordenes: Generator, generador_usuarios: Generator, estado: str
 ) -> Generator:
-    pass
+    user_state_by_user_id = dict()
+
+    for user in generador_usuarios:
+        user_state_by_user_id[user.id_base_datos] = extract_state(user.direccion)
+
+    formatted_state = estado.strip().upper()
+
+    return filter(
+        lambda order: user_state_by_user_id[order.id_base_datos_usuario]
+        == formatted_state,
+        generador_ordenes,
+    )
 
 
 def ganancias_dadas_por_clientes(
@@ -345,7 +416,40 @@ def ganancias_dadas_por_clientes(
     generador_ordenes_items: Generator,
     ids_usuarios: list,
 ) -> dict:
-    pass
+    user_id_by_order_id = dict()
+
+    for order in generador_ordenes:
+        user_id_by_order_id[order.id_base_datos] = order.id_base_datos_usuario
+
+    product_price_by_product_id = dict()
+
+    for product in generador_productos:
+        product_price_by_product_id[product.id_base_datos] = product.precio
+
+    ids_users = set(ids_usuarios)
+
+    income_by_user_id = dict()
+
+    for id in ids_usuarios:
+        income_by_user_id[id] = 0
+
+    for order in generador_ordenes_items:
+        if order.id_base_datos_orden not in user_id_by_order_id:
+            continue
+
+        user_id = user_id_by_order_id[order.id_base_datos_orden]
+
+        if user_id not in ids_users:
+            continue
+
+        current = (
+            order.cantidad_productos
+            * product_price_by_product_id[order.id_base_datos_producto]
+        )
+
+        income_by_user_id[user_id] += current
+
+    return income_by_user_id
 
 
 def modificar_estados_ordenes_dirigidas_al_estado(
@@ -354,10 +458,53 @@ def modificar_estados_ordenes_dirigidas_al_estado(
     estado: str,
     cambio_estados_ordenes: dict,
 ) -> Generator:
-    pass
+    for order in ordenes_dirigidas_al_estado(
+        generador_ordenes, generador_usuarios, estado
+    ):
+        if order.estado_orden not in cambio_estados_ordenes:
+            yield order
+            continue
+
+        yield Ordenes(
+            **{
+                **order._asdict(),
+                **{"estado_orden": cambio_estados_ordenes[order.estado_orden]},
+            }
+        )
 
 
 def agrupar_items_por_maximo_pedido(
     generador_productos: Generator, generador_ordenes_items: Generator
 ) -> Generator:
-    pass
+    max_order_by_product_id = defaultdict(int)
+
+    for item in generador_ordenes_items:
+        current = item.cantidad_productos
+        last = max_order_by_product_id[item.id_base_datos_producto]
+
+        max_order_by_product_id[item.id_base_datos_producto] = max(current, last)
+
+    def transform_product(product: Productos):
+        max_order = max_order_by_product_id[product.id_base_datos]
+
+        if max_order == 1:
+            return product
+
+        changes = {
+            "unidad_de_medida": cambio_unidad_medida(product.unidad_de_medida),
+            "cantidad_por_unidad": max_order * product.cantidad_por_unidad,
+            "precio": max_order * product.precio,
+            "fecha_modificacion": fecha_actual(),
+        }
+
+        new_data = {
+            **product._asdict(),
+            **changes,
+        }
+
+        return Productos(**new_data)
+
+    return map(transform_product, generador_productos)
+
+
+# Revisar tests: 10, 7
