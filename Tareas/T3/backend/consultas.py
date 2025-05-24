@@ -207,8 +207,9 @@ def producto_mas_popular(
             lambda product: products_scores.get(product.id_base_datos, 0) > 0,
             generador_productos,
         ),
+        reverse=True,
         key=lambda product: (
-            -products_scores.get(product.id_base_datos, 0),
+            products_scores.get(product.id_base_datos, 0),
             product.id_base_datos,
         ),
     )
@@ -507,4 +508,4 @@ def agrupar_items_por_maximo_pedido(
     return map(transform_product, generador_productos)
 
 
-# Revisar tests: 10, 7
+# Revisar tests: 10
