@@ -152,7 +152,6 @@ def ordenes_entre_fechas(
     )
 
 
-# TODO: Ask if _asdict() is bad practice
 def modificar_estado_orden_ordenes_previas_fecha(
     generador_ordenes: Generator, fecha: str, cambio_estados: dict
 ) -> Generator:
@@ -463,7 +462,6 @@ def modificar_estados_ordenes_dirigidas_al_estado(
         generador_ordenes, generador_usuarios, estado
     ):
         if order.estado_orden not in cambio_estados_ordenes:
-            yield order
             continue
 
         yield Ordenes(
