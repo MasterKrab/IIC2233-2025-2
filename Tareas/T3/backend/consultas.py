@@ -2,6 +2,7 @@ from typing import Generator, Iterable
 from pathlib import Path
 from typing import Callable, Generator, TypeVar, Optional
 from collections import defaultdict
+
 from utilidades import (
     Usuarios,
     Productos,
@@ -12,6 +13,8 @@ from utilidades import (
     fecha_actual,
     cambio_unidad_medida,
 )
+
+from utils.state import extract_state
 
 
 def readFormat(text: str, separator: str, typing: list):
@@ -89,10 +92,6 @@ def cargar_proveedores_productos(path: str) -> Generator:
         for line in file:
             data = line.strip().split(";")
             yield ProveedoresProductos(*data)
-
-
-def extract_state(text: str) -> str:
-    return text.split(" ")[::-1][1].strip().upper()
 
 
 # CONSULTAS
@@ -404,7 +403,7 @@ def ordenes_dirigidas_al_estado(
     formatted_state = estado.strip().upper()
 
     return filter(
-        lambda order: user_state_by_user_id[order.id_base_datos_usuario]
+        lambda order: user_state_by_user_id.get(order.id_base_datos_usuario)
         == formatted_state,
         generador_ordenes,
     )
@@ -504,6 +503,3 @@ def agrupar_items_por_maximo_pedido(
         return Productos(**new_data)
 
     return map(transform_product, generador_productos)
-
-
-# Revisar tests: 10
