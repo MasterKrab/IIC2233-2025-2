@@ -1,6 +1,5 @@
 from typing import Generator, Iterable
 from pathlib import Path
-from typing import Callable, Generator, TypeVar, Optional
 from collections import defaultdict
 
 from utilidades import (
@@ -14,30 +13,9 @@ from utilidades import (
     cambio_unidad_medida,
 )
 
+from utils.date import date_to_days
+from utils.read import read_format
 from utils.state import extract_state
-
-
-def readFormat(text: str, separator: str, typing: list):
-    return map(
-        lambda tuple: tuple[1](tuple[0]), zip(text.strip().split(separator), typing)
-    )
-
-
-def dateToDays(date: str, separator: str = "-"):
-    years, months, days = map(int, date.split(separator))
-
-    return years * 60 * 60 + months * 60 + days
-
-
-Item = TypeVar("Item")
-
-
-def find(callback: Callable[[Item], bool], generator: Generator) -> Optional[Item]:
-    for item in generator:
-        if callback(item):
-            return item
-
-    return None
 
 
 def cargar_usuarios(path: str) -> Generator:
@@ -54,7 +32,8 @@ def cargar_productos(path: str) -> Generator:
         next(file)
 
         for line in file:
-            data = readFormat(line, ";", [str, str, float, int, str, str, str, str])
+            data = read_format(
+                line, ";", [str, str, float, int, str, str, str, str])
             yield Productos(*data)
 
 
@@ -72,7 +51,7 @@ def cargar_ordenes_items(path: str) -> Generator:
         next(file)
 
         for line in file:
-            data = readFormat(line, ";", [str, str, int])
+            data = read_format(line, ";", [str, str, int])
             yield OrdenesItems(*data)
 
 
@@ -103,10 +82,10 @@ def cargar_proveedores_productos(path: str) -> Generator:
 def productos_desde_fecha(
     generador_productos: Generator, fecha: str, inverso: bool
 ) -> Generator:
-    days = dateToDays(fecha)
+    days = date_to_days(fecha)
 
     def is_date_in_range(product: Productos):
-        current_days = dateToDays(product.fecha_modificacion)
+        current_days = date_to_days(product.fecha_modificacion)
 
         return current_days == days or inverso ^ (current_days > days)
 
@@ -129,7 +108,8 @@ def buscar_orden_por_contenido(
 def proveedores_por_estado(generador_proveedores: Generator, estado: str) -> Generator:
     return map(
         lambda supplier: supplier.nombre_proveedor,
-        filter(lambda supplier: supplier.estado == estado, generador_proveedores),
+        filter(lambda supplier: supplier.estado ==
+               estado, generador_proveedores),
     )
 
 
@@ -142,11 +122,12 @@ def ordenes_segun_estado_orden(
 def ordenes_entre_fechas(
     generador_ordenes: Generator, fecha_inicial: str, fecha_final: str
 ) -> Generator:
-    start = -float("inf") if fecha_inicial == "-" else dateToDays(fecha_inicial)
-    end = float("inf") if fecha_final == "-" else dateToDays(fecha_final)
+    start = - \
+        float("inf") if fecha_inicial == "-" else date_to_days(fecha_inicial)
+    end = float("inf") if fecha_final == "-" else date_to_days(fecha_final)
 
     return filter(
-        lambda order: start <= dateToDays(order.fecha_creacion) <= end,
+        lambda order: start <= date_to_days(order.fecha_creacion) <= end,
         generador_ordenes,
     )
 
@@ -154,7 +135,7 @@ def ordenes_entre_fechas(
 def modificar_estado_orden_ordenes_previas_fecha(
     generador_ordenes: Generator, fecha: str, cambio_estados: dict
 ) -> Generator:
-    days = dateToDays(fecha)
+    days = date_to_days(fecha)
 
     return map(
         lambda order: Ordenes(
@@ -164,7 +145,7 @@ def modificar_estado_orden_ordenes_previas_fecha(
             }
         ),
         filter(
-            lambda order: dateToDays(order.fecha_creacion) < days
+            lambda order: date_to_days(order.fecha_creacion) < days
             and order.estado_orden in cambio_estados,
             generador_ordenes,
         ),
@@ -185,7 +166,8 @@ def producto_mas_popular(
     valid_orders_ids = set(
         map(
             lambda order: order.id_base_datos,
-            ordenes_entre_fechas(generador_ordenes, fecha_inicial, fecha_final),
+            ordenes_entre_fechas(
+                generador_ordenes, fecha_inicial, fecha_final),
         )
     )
 
@@ -198,7 +180,8 @@ def producto_mas_popular(
 
     for item in valid_items:
         id = item.id_base_datos_producto
-        products_scores[id] = products_scores.get(id, 0) + item.cantidad_productos
+        products_scores[id] = products_scores.get(
+            id, 0) + item.cantidad_productos
 
     products = sorted(
         filter(
@@ -238,7 +221,8 @@ def ordenes_usuario(
 
     for item in generador_ordenes_items:
         amount = (
-            item.cantidad_productos * amount_products_by_id[item.id_base_datos_producto]
+            item.cantidad_productos *
+            amount_products_by_id[item.id_base_datos_producto]
         )
 
         user_id = user_id_by_order_id[item.id_base_datos_orden]
@@ -304,7 +288,8 @@ def proveedores_segun_precio_productos(
 
         last_price = max_cost_by_supplier_name[supplier_name]
 
-        max_cost_by_supplier_name[supplier_name] = max(product.precio, last_price)
+        max_cost_by_supplier_name[supplier_name] = max(
+            product.precio, last_price)
 
         last_amount = products_amount_by_supplier_name[supplier_name]
 
@@ -322,7 +307,8 @@ def proveedores_segun_precio_productos(
 
     for supplier in suppliers:
         result.append(
-            (supplier, products_amount_by_supplier_name[supplier.nombre_proveedor])
+            (supplier,
+             products_amount_by_supplier_name[supplier.nombre_proveedor])
         )
 
     return result
@@ -343,7 +329,8 @@ def precio_promedio_segun_estado_orden(
 
     for order in generador_ordenes_items:
         price_by_order_id[order.id_base_datos_orden] += (
-            price_by_product_id[order.id_base_datos_producto] * order.cantidad_productos
+            price_by_product_id[order.id_base_datos_producto] *
+            order.cantidad_productos
         )
 
     total = 0.0
@@ -398,7 +385,8 @@ def ordenes_dirigidas_al_estado(
     user_state_by_user_id = dict()
 
     for user in generador_usuarios:
-        user_state_by_user_id[user.id_base_datos] = extract_state(user.direccion)
+        user_state_by_user_id[user.id_base_datos] = extract_state(
+            user.direccion)
 
     formatted_state = estado.strip().upper()
 
@@ -480,7 +468,8 @@ def agrupar_items_por_maximo_pedido(
         current = item.cantidad_productos
         last = max_order_by_product_id[item.id_base_datos_producto]
 
-        max_order_by_product_id[item.id_base_datos_producto] = max(current, last)
+        max_order_by_product_id[item.id_base_datos_producto] = max(
+            current, last)
 
     def transform_product(product: Productos):
         max_order = max_order_by_product_id[product.id_base_datos]

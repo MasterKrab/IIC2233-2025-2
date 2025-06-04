@@ -1,23 +1,13 @@
-from os.path import isdir, exists, join
-from os import listdir, getcwd
-
 from PyQt5.QtWidgets import (
     QWidget,
     QHBoxLayout,
     QVBoxLayout,
     QLabel,
     QPushButton,
-    QLineEdit,
-    QComboBox,
-    QCompleter,
     QMessageBox,
 )
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
-
-from utils.folders import search_folders
-from utils.path import normalize_path
-from constants import DATA_FOLDER, DATA_FILES
 
 
 from frontend.input import QueryInput
@@ -57,7 +47,8 @@ class MainWindow(QWidget):
 
         self.results_top_layout = QHBoxLayout()
         self.results_top_layout.addWidget(self.results_label)
-        self.results_top_layout.addWidget(self.next_button, alignment=Qt.AlignRight)
+        self.results_top_layout.addWidget(
+            self.next_button, alignment=Qt.AlignRight)
 
         self.right_layout.addLayout(self.results_top_layout)
         self.right_layout.addStretch(1)

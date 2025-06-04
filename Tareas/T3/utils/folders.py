@@ -9,7 +9,7 @@ def search_folders(path: str) -> list[str]:
         if not isdir(path):
             return []
 
-        folders = [path[len(base) + 1 :]] if path != base else []
+        folders = [path[len(base) + 1:]] if path != base else []
 
         for item in listdir(path):
             folders = [*folders, *search(join(path, item))]

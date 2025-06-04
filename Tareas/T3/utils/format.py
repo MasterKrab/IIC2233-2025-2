@@ -1,16 +1,16 @@
 from collections import namedtuple
 
 
-def formatField(field: str) -> str:
+def format_field(field: str) -> str:
     return field.replace("_", " ").capitalize()
 
 
-def formatHeader(header: list[str]) -> list[str]:
-    return [formatField(field) for field in header]
+def format_header(header: list[str]) -> list[str]:
+    return [format_field(field) for field in header]
 
 
-def formatNamedtuples(values: list[namedtuple]) -> tuple[list[str], list[list[str]]]:
-    header = formatHeader(values[0]._fields if values else [])
+def format_namedtuples(values: list[namedtuple]) -> tuple[list[str], list[list[str]]]:
+    header = format_header(values[0]._fields if values else [])
 
     rows = []
 
@@ -22,10 +22,10 @@ def formatNamedtuples(values: list[namedtuple]) -> tuple[list[str], list[list[st
 
         rows.append(row)
 
-    return formatHeader(header), rows
+    return header, rows
 
 
-def formatDicts(values: list[dict]) -> tuple[list[str], list[list[str]]]:
+def format_dicts(values: list[dict]) -> tuple[list[str], list[list[str]]]:
     if not values:
         return [], []
 
@@ -36,4 +36,4 @@ def formatDicts(values: list[dict]) -> tuple[list[str], list[list[str]]]:
         row = [str(value[key]) for key in header]
         rows.append(row)
 
-    return formatHeader(header), rows
+    return format_header(header), rows

@@ -3,7 +3,6 @@ from os import listdir, getcwd
 
 from PyQt5.QtWidgets import (
     QWidget,
-    QHBoxLayout,
     QVBoxLayout,
     QLabel,
     QPushButton,
@@ -11,14 +10,14 @@ from PyQt5.QtWidgets import (
     QComboBox,
     QCompleter,
     QMessageBox,
-    QTableWidget,
 )
+
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QFont
 
 from utils.folders import search_folders
 from utils.path import normalize_path
-from utils.format import formatField
+from utils.format import format_field
 
 from constants import DATA_FOLDER, DATA_FILES
 from frontend.handlers import QUERIES_HANDLES
@@ -41,7 +40,7 @@ class QueryInput(QWidget):
         self.query = QComboBox()
 
         self.query_fields = {
-            formatField(query): query for query in QUERIES_HANDLES.keys()
+            format_field(query): query for query in QUERIES_HANDLES.keys()
         }
 
         self.query.addItems(self.query_fields.keys())
@@ -97,7 +96,7 @@ class QueryInput(QWidget):
             QMessageBox.critical(
                 self,
                 "Error",
-                f"La carpeta no contiene todos los archivos necesarios. ",
+                "La carpeta no contiene todos los archivos necesarios.",
             )
             return
 

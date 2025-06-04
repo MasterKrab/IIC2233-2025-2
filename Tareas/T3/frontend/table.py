@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QTableWidget, QTableWidgetItem, QLabel
+from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem
 
 
 class Table(QTableWidget):

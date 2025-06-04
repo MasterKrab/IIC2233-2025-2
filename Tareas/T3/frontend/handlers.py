@@ -17,7 +17,6 @@ from backend.consultas import (
     proveedores_por_estado,
     ordenes_segun_estado_orden,
     ordenes_entre_fechas,
-    ordenes_entre_fechas,
     modificar_estado_orden_ordenes_previas_fecha,
     producto_mas_popular,
     ordenes_usuario,
@@ -31,7 +30,7 @@ from backend.consultas import (
     agrupar_items_por_maximo_pedido,
 )
 
-from utils.format import formatNamedtuples, formatDicts
+from utils.format import format_namedtuples, format_dicts
 from utils.state import extract_state
 
 from constants import (
@@ -256,7 +255,8 @@ QUERIES_HANDLES = {
     "proveedores_por_estado": handle_proveedores_por_estado,
     "ordenes_segun_estado_orden": handle_ordenes_segun_estado_orden,
     "ordenes_entre_fechas": handle_ordenes_entre_fechas,
-    "modificar_estado_orden_ordenes_previas_fecha": handle_modificar_estado_orden_ordenes_previas_fecha,
+    "modificar_estado_orden_ordenes_previas_fecha":
+        handle_modificar_estado_orden_ordenes_previas_fecha,
     "producto_mas_popular": handle_producto_mas_popular,
     "ordenes_usuario": handle_ordenes_usuario,
     "valor_orden": handle_valor_orden,
@@ -265,13 +265,14 @@ QUERIES_HANDLES = {
     "cantidad_vendida_productos": handle_cantidad_vendida_productos,
     "ordenes_dirigidas_al_estado": handle_ordenes_dirigidas_al_estado,
     "ganancias_dadas_por_clientes": handle_ganancias_dadas_por_clientes,
-    "modificar_estados_ordenes_dirigidas_al_estado": handle_modificar_estados_ordenes_dirigidas_al_estado,
+    "modificar_estados_ordenes_dirigidas_al_estado":
+        handle_modificar_estados_ordenes_dirigidas_al_estado,
     "agrupar_items_por_maximo_pedido": handle_agrupar_items_por_maximo_pedido,
 }
 
 
-def make_query(path: str, query: str) -> Generator:
-    if not query in QUERIES_HANDLES:
+def make_query(path: str, query: str, items_per_page: int = 25) -> Generator:
+    if query not in QUERIES_HANDLES:
         raise ValueError(f"Query '{query}' not found.")
 
     result = QUERIES_HANDLES[query](path)
@@ -279,7 +280,7 @@ def make_query(path: str, query: str) -> Generator:
     while True:
         data = []
 
-        for i in range(100):
+        for i in range(items_per_page):
             try:
                 data.append(next(result))
             except StopIteration:
@@ -289,8 +290,8 @@ def make_query(path: str, query: str) -> Generator:
             raise StopIteration()
 
         if isinstance(data[0], dict):
-            header, rows = formatDicts(data)
+            header, rows = format_dicts(data)
         elif isinstance(data[0], tuple):
-            header, rows = formatNamedtuples(data)
+            header, rows = format_namedtuples(data)
 
         yield Table(header, rows)
