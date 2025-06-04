@@ -1,96 +1,239 @@
-# Tarea X: Nombre de la tarea :school_satchel:
-
-Un buen ```README.md``` puede marcar una gran diferencia en la facilidad con la que corregimos una tarea, y consecuentemente cómo funciona su programa, por lo en general, entre más ordenado y limpio sea éste, mejor será
-
-Para nuestra suerte, GitHub soporta el formato [MarkDown](https://es.wikipedia.org/wiki/Markdown), el cual permite utilizar una amplia variedad de estilos de texto, tanto para resaltar cosas importantes como para separar ideas o poner código de manera ordenada ([pueden ver casi todas las funcionalidades que incluye aquí](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet))
-
-Un buen ```README.md``` no tiene por que ser muy extenso tampoco, hay que ser **concisos** (a menos que lo consideren necesario) pero **tampoco pueden** faltar cosas. Lo importante es que sea claro y limpio
-
-**Dejar claro lo que NO pudieron implementar y lo que no funciona a la perfección. Esto puede sonar innecesario pero permite que el ayudante se enfoque en lo que sí podría subir su puntaje.**
+# Tarea 2: DCC 🗣️❔❔
 
 ## Consideraciones generales :octocat:
 
-<Descripción de lo que hace y que **_no_** hace la tarea que entregaron junto
-con detalles de último minuto y consideraciones como por ejemplo cambiar algo
-en cierta línea del código o comentar una función>
+### Carga de datos
 
-### Cosas implementadas y no implementadas :white_check_mark: :x:
+#### cargar_usuarios()
 
-* <Nombre item pauta<sub>1</sub>>: Hecha completa
-* <Nombre item pauta<sub>2</sub>>: Me faltó hacer <insertar qué cosa faltó>
-  * <Nombre subitem pauta<sub>2.1</sub>>: Hecha completa
-  * <Nombre subitem pauta<sub>2.2</sub>>: Me faltó hacer <insertar qué cosa faltó>
-  * ...
-* <Nombre item pauta<sub>3</sub>>: Me faltó hacer <insertar qué cosa faltó>
-* ...
-* <Nombre item pauta<sub>n</sub>>: Me faltó hacer <insertar qué cosa faltó>
+- ✅ Pasan todos los tests para validar el correcto funcionamiento de esta consulta.
+
+#### cargar_productos()
+
+- ✅ Pasan todos los tests para validar el correcto funcionamiento de esta consulta.
+
+#### cargar_ordenes()
+
+- ✅ Pasan todos los tests para validar el correcto funcionamiento de esta consulta.
+
+#### cargar_ordenes_items()
+
+- ✅ Pasan todos los tests para validar el correcto funcionamiento de esta consulta.
+
+#### cargar_proveedores()
+
+- ✅ Pasan todos los tests para validar el correcto funcionamiento de esta consulta.
+
+#### cargar_proveedores_productos()
+
+- ✅ Pasan todos los tests para validar el correcto funcionamiento de esta consulta.
+
+### Consultas Simples
+
+#### productos_desde_fecha()
+
+- ✅ Pasan todos los tests de correctitud, los cuales validan el correcto funcionamiento de esta consulta.
+- ✅ Pasan todos los tests de cargar, los cuales validan que la consulta termina en un tiempo adecuado.
+
+#### buscar_orden_por_contenido()
+
+- ✅ Pasan todos los tests de correctitud, los cuales validan el correcto funcionamiento de esta consulta.
+- ✅ Pasan todos los tests de cargar, los cuales validan que la consulta termina en un tiempo adecuado.
+
+#### proveedores_por_estado()
+
+- ✅ Pasan todos los tests de correctitud, los cuales validan el correcto funcionamiento de esta consulta.
+- ✅ Pasan todos los tests de cargar, los cuales validan que la consulta termina en un tiempo adecuado.
+
+#### ordenes_segun_estado_orden()
+
+- ✅ Pasan todos los tests de correctitud, los cuales validan el correcto funcionamiento de esta consulta.
+- ✅ Pasan todos los tests de cargar, los cuales validan que la consulta termina en un tiempo adecuado.
+
+#### ordenes_entre_fechas()
+
+- ✅ Pasan todos los tests de correctitud, los cuales validan el correcto funcionamiento de esta consulta.
+- ✅ Pasan todos los tests de cargar, los cuales validan que la consulta termina en un tiempo adecuado.
+
+#### modificar_estado_orden_ordenes_previas_fecha()
+
+- ✅ Pasan todos los tests de correctitud, los cuales validan el correcto funcionamiento de esta consulta.
+- ✅ Pasan todos los tests de cargar, los cuales validan que la consulta termina en un tiempo adecuado.
+
+### Consultas Complejas
+
+#### producto_mas_popular()
+
+- ✅ Pasan todos los tests de correctitud, los cuales validan el correcto funcionamiento de esta consulta.
+- ✅ Pasan todos los tests de cargar, los cuales validan que la consulta termina en un tiempo adecuado.
+
+#### ordenes_usuario()
+
+- ✅ Pasan todos los tests de correctitud, los cuales validan el correcto funcionamiento de esta consulta.
+- ✅ Pasan todos los tests de cargar, los cuales validan que la consulta termina en un tiempo adecuado.
+
+#### valor_orden()
+
+- ✅ Pasan todos los tests de correctitud, los cuales validan el correcto funcionamiento de esta consulta.
+- ✅ Pasan todos los tests de cargar, los cuales validan que la consulta termina en un tiempo adecuado.
+
+#### proveedores_segun_precio_productos()
+
+- ✅ Pasan todos los tests de correctitud, los cuales validan el correcto funcionamiento de esta consulta.
+- ✅ Pasan todos los tests de cargar, los cuales validan que la consulta termina en un tiempo adecuado.
+
+#### precio_promedio_segun_estado_orden()
+
+- ✅ Pasan todos los tests de correctitud, los cuales validan el correcto funcionamiento de esta consulta.
+- ✅ Pasan todos los tests de cargar, los cuales validan que la consulta termina en un tiempo adecuado.
+
+#### cantidad_vendida_productos()
+
+- ✅ Pasan todos los tests de correctitud, los cuales validan el correcto funcionamiento de esta consulta.
+- ✅ Pasan todos los tests de cargar, los cuales validan que la consulta termina en un tiempo adecuado.
+
+#### ordenes_dirigidas_al_estado()
+
+- ✅ Pasan todos los tests de correctitud, los cuales validan el correcto funcionamiento de esta consulta.
+- ✅ Pasan todos los tests de cargar, los cuales validan que la consulta termina en un tiempo adecuado.
+
+#### ganancias_dadas_por_clientes()
+
+- ✅ Pasan todos los tests de correctitud, los cuales validan el correcto funcionamiento de esta consulta.
+- ✅ Pasan todos los tests de cargar, los cuales validan que la consulta termina en un tiempo adecuado.
+
+#### modificar_estados_ordenes_dirigidas_al_estado()
+
+- ✅ Pasan todos los tests de correctitud, los cuales validan el correcto funcionamiento de esta consulta.
+- ✅ Pasan todos los tests de cargar, los cuales validan que la consulta termina en un tiempo adecuado.
+
+#### agrupar_items_por_maximo_pedido()
+
+- ✅ Pasan todos los tests de correctitud, los cuales validan el correcto funcionamiento de esta consulta.
+- ✅ Pasan todos los tests de cargar, los cuales validan que la consulta termina en un tiempo adecuado.
+
+### Interfaz Gráfica e Interacción
+
+#### Ventana de Entrada
+
+- ✅  Se muestran todos los elementos mínimos solicitados en el enunciado, sin superponerse entre sí.
+
+#### Ventana Principal
+
+- ✅ Se implementa correctamente un input de texto que recibe el path relativo del subset de datos sobre el cual se ejecutarán las consultas.
+
+- ✅ Se implementa correctamente un Drop-down con la lista de consultas disponibles. Permite seleccionar una consulta a ejecutar.
+
+- ✅ Se implementa correctamente un botón con el nombre “Ejecutar Consulta” que se encarga de cargar los datos indicados en el input de texto y ejecutar la consulta seleccionada en el drop-down.
+- ✅ Se implementa correctamente un elemento de texto que posea -por lo menos- un scroll de tipo vertical. Este elemento debe permitir ver la cantidad de datos -que corresponden al resultado de la consulta ejecutada- acordes a la página actual. En caso de que no se puedan apreciar todos los datos dentro del elemento, se debe poder acceder a ella por medio del scroll.
+- ✅ Se implementa correctamente un botón con el nombre “Siguiente Página”, el cual tiene como funcionalidad poder avanzar en la paginación
+
+- ✅ Se implementa correctamente un sistema de paginación. Se espera que los resultados generados por las consultas sean seccionados en batches (o bloques) de una cierta cantidad de datos y en la ventana solo se puedan ver esa cantidad de resultados por página.
+
+#### Flujo
+
+- ✅ El usuario puede moverse sin problemas a lo largo de toda la aplicación implementada.
 
 ## Ejecución :computer:
 
-El módulo principal de la tarea a ejecutar es  ```archivo.py```. Además se debe crear los siguientes archivos y directorios adicionales:
+El módulo principal a ejecutar es `main.py`, que inicia un menú. Además, se debe crear los siguientes archivos y directorios adicionales:
 
-1. ```archivo.ext``` en ```ubicación```
-2. ```directorio``` en ```ubicación```
-3. ...
+1. Carpeta `data` en la raíz `./` con al menos una subcarpeta con los archivos  `ordenes.csv`, `productos.csv`, `proveedores.csv`, `proveedores_productos.csv`, `usuarios.csv` y `ordenes_items.csv` con los datos de la tarea en el formato válido.
+
+2. Carpetas `utils`, `frontend` y `backend` con los archivos específicados en la sección de librerías propias.
+
+3. Archivo `constants.py` en la carpeta raíz `./` con las constantes utilizadas en el programa.
 
 ## Librerías :books:
 
 ### Librerías externas utilizadas
 
-La lista de librerías externas que utilicé fue la siguiente:
+Se utilizaron las siguientes librerías externas:
 
-1. ```librería_1```: ```función() / módulo```
-2. ```librería_2```: ```función() / módulo``` (debe instalarse)
-3. ...
+1. `PyQt5`: `QtWidgets`, `QtCore` y `QtGui`
+2. `pathlib`: `Path`
+3. `sys`: `argv`
+4. `collections`: `defaultdict` y `namedtuple`
+5. `typing`: `Generator` e `Iterable`
+6. `os`: `listdir`, `path`,  `getcwd`
 
 ### Librerías propias
 
 Por otro lado, los módulos que fueron creados fueron los siguientes:
 
-1. ```librería_1```: Contiene a ```ClaseA```, ```ClaseB```, (ser general, tampoco es necesario especificar cada una)...
-2. ```librería_2```: Hecha para <insertar descripción **breve** de lo que hace o qué contiene>
-3. ...
+1. `constants`: Contiene a las constantes: `DATAFOLDER`, `ITEMS_ORDERS_FILE`, `ORDERS_FILE`, `PRODUCTS_FILE`, `SUPPLIERS_PRODUCTS_FILE`, `SUPPLIERS_FILE`, `USERS_FILE` y `DATA_FILES`.
+2. `utils.date`: Contiene la función `date_to_days`.
+3. `utils.folders`: Contiene la función `search_folders`.
+4. `utils.format`: Contiene las funciones `format_field`, `format_header`, `format_namedtuples` y `format_dicts`.
+5. `utils.list`: Contiene la función `flatten`.
+6. `utils.path`: Contiene la función `normalize_path`.
+7. `utils.read`: Contiene la función `read_format`.
+8. `utils.state`: Contiene la función `extract_state`.
+9. `backend.consultas`: Contiene las funciones:
+    - `cargar_usuarios`
+    - `cargar_productos`
+    - `cargar_ordenes`
+    - `cargar_ordenes_items`
+    - `cargar_proveedores`
+    - `cargar_proveedores_productos`
+    - `productos_desde_fecha`
+    - `buscar_orden_por_contenido`
+    - `proveedores_por_estado`
+    - `ordenes_segun_estado_orden`
+    - `ordenes_entre_fechas`
+    - `modificar_estado_orden_ordenes_previas_fecha`
+    - `producto_mas_popular`
+    - `ordenes_usuario`
+    - `valor_orden`
+    - `proveedores_segun_precio_productos`
+    - `precio_promedio_segun_estado_orden`
+    - `cantidad_vendida_productos`
+    - `ordenes_dirigidas_al_estado`
+    - `ganancias_dadas_por_clientes`
+    - `modificar_estados_ordenes_dirigidas_al_estado`
+    - `agrupar_items_por_maximo_pedido`
+10. `frontend.handlers` contiene las funciones:
+    - `handle_cargar_usuarios`
+    - `handle_cargar_productos`
+    - `handle_cargar_ordenes`
+    - `handle_cargar_ordenes_items`
+    - `handle_cargar_proveedores`
+    - `handle_cargar_proveedores_productos`
+    - `handle_productos_desde_fecha`
+    - `handle_buscar_orden_por_contenido`
+    - `handle_proveedores_por_estado`
+    - `handle_ordenes_segun_estado_orden`
+    - `handle_ordenes_entre_fechas`
+    - `handle_modificar_estado_orden_ordenes_previas_fecha`
+    - `handle_producto_mas_popular`
+    - `handle_ordenes_usuario`
+    - `handle_valor_orden`
+    - `handle_proveedores_segun_precio_productos`
+    - `handle_precio_promedio_segun_estado_orden`
+    - `handle_cantidad_vendida_productos`
+    - `handle_ordenes_dirigidas_al_estado`
+    - `handle_ganancias_dadas_por_clientes`
+    - `handle_modificar_estados_ordenes_dirigidas_al_estado`
+    - `handle_agrupar_items_por_maximo_pedido`
+    - `make_query`
+11. `frontend.inputs`: Contiene la clase `QueryInput`.
+12. `frontend.main_window`: Contiene la clase `MainWindow`.
+13. `frontend.welcome`: Contiene la clase `WelcomeWindow`.
 
 ## Supuestos y consideraciones adicionales :thinking:
 
-Los supuestos que realicé durante la tarea son los siguientes:
+1. Se tiene considerado un margen de error para los cálculos que involucren _floats_ debido a [los problemas de presición que conllevan](https://docs.python.org/3/tutorial/floatingpoint.html),
 
-1. <Descripción/consideración 1 y justificación del por qué es válido/a>
-2. <Descripción/consideración 2 y justificación del por qué es válido/a>
-3. ...
+2. La tarea fue desarrollada en un entorno virtual creado con _Conda_ (versión `24.9.2`), instalando _Python_ en su versión `3.11.11`. Se desarrollo en el sistema operativo `Archcraft x86_64`con _kernel_ `Linux 6.13.8-arch1`.
 
-PD: <una última consideración (de ser necesaria) o comentario hecho anteriormente que se quiera **recalcar**>
+3. Las funcionalidades de _PyQt5_ usadas en la tarea fueron investigadas en la [documentación de River Bank](https://www.riverbankcomputing.com/static/Docs/PyQt5/).
 
--------
+4. El uso de `namedtuple.as_dict()` fue descubierto en [Stack Overflow](https://stackoverflow.com/questions/26180528/convert-a-namedtuple-into-a-dictionary) y se utilizó en el backend para copiar una `namedtuple` y modificar sus valores sin afectar la original.
 
-**EXTRA:** si van a explicar qué hace específicamente un método, no lo coloquen en el README mismo. Pueden hacerlo directamente comentando el método en su archivo. Por ejemplo:
+5. El archivo `parametros.py` no fue usado en la implementación del programa, puesto que no se consideró necesario ni de ayuda para la implementación de la tarea.
 
-```python
-class Corrector:
+6. En la interfaz para la consultas que requerían más parámetros que la ruta y generadores de los datos de los archivos _csv_ como fecha o cambios de estado se les definió valores fijos puesto que no estaba especificado en el enunciado y fue discutido en esta [issue](https://github.com/IIC2233/Syllabus/issues/339).
 
-    def __init__(self):
-          pass
+7. Si se entregan rutas en la interfaz con `/` o `\` en los extremos o usando ambos tipos de separadores, el programa los normaliza para que no afecte la carga de los archivos, es decir, es esperado que funcione correctamente con rutas como `/M\S/M//`, ya que el programa la considera como `M/S/M` o `M\S\M` dependiendo el sistema operativo.
 
-    # Este método coloca un 6 en las tareas que recibe
-    def corregir(self, tarea):
-        tarea.nota  = 6
-        return tarea
-```
-
-Si quieren ser más formales, pueden usar alguna convención de documentación. Google tiene la suya, Python tiene otra y hay muchas más. La de Python es la [PEP287, conocida como reST](https://www.python.org/dev/peps/pep-0287/). Lo más básico es documentar así:
-
-```python
-def funcion(argumento):
-    """
-    Mi función hace X con el argumento
-    """
-    return argumento_modificado
-```
-
-Lo importante es que expliquen qué hace la función y que si saben que alguna parte puede quedar complicada de entender o tienen alguna función mágica usen los comentarios/documentación para que el ayudante entienda sus intenciones.
-
-## Referencias de código externo :book:
-
-Para realizar mi tarea saqué código de:
-
-1. \<link de código>: este hace \<lo que hace> y está implementado en el archivo <nombre.py> en las líneas <número de líneas> y hace <explicación breve de que hace>
+## Implementación del programa
