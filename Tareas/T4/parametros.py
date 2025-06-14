@@ -1,0 +1,3 @@
+CLAVE_CIFRADO = "$dCDRnVXdJNAdyk^8Q$8kaWZtVJHCVG*ejok&Z8u1A8l&f^fEJ$#&onUAE$WqJ!SRTTprsRpl6B1Jbk7gs5$IhcVZgm1uy0VTo7!ih80!hJQPl1$YdFT&BAWi^22lQqy"
+
+CHUNK_SIZE = 128  # bytes
