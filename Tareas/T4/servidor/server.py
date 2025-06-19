@@ -11,7 +11,6 @@ class Server:
         self.users = {}
         self.generate_id = create_id_generator()
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.names = set()
 
     def run(self) -> None:
         self.socket.bind((self.host, self.port))
@@ -22,7 +21,7 @@ class Server:
             socket, address = self.socket.accept()
             user_id = self.generate_id()
 
-            thread = UserThread(user_id, socket, self.names)
+            thread = UserThread(user_id, socket)
             self.users[user_id] = thread
 
             log(f"[id: {user_id}] Connection: {socket} {address}")

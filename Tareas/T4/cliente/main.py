@@ -4,6 +4,7 @@ from pathlib import Path
 from cliente.backend.client import Client
 from cliente.frontend.welcome import WelcomeWindow
 from cliente.frontend.main_window import MainWindow
+from cliente.utils.config import get_socket_config
 from PyQt5.QtWidgets import QApplication, QMessageBox
 
 
@@ -52,11 +53,6 @@ class MainHandler:
 
 
 def main():
-    with Path("cliente", "backend", "conexion.json").open(encoding="utf-8") as file:
-        data = json.load(file)
-        port = data["puerto"]
-        host = data["host"]
-
     def hook(type, value, traceback) -> None:
         print(type)
         print(traceback)
@@ -64,6 +60,8 @@ def main():
     sys.__excepthook__ = hook
 
     app = QApplication([])
+
+    port, host = get_socket_config()
 
     main_handler = MainHandler(host, port)
 

@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QLabel
+from PyQt5.QtWidgets import QWidget, QLabel, QGridLayout
 
 
 class MainWindow(QWidget):
@@ -9,4 +9,7 @@ class MainWindow(QWidget):
         self.setWindowTitle(title)
         self.setGeometry(x, y, 600, 300)
 
-        self.label = QLabel(title, self)
+        self.layout = QGridLayout()
+        self.setLayout(self.layout)
+        
+        

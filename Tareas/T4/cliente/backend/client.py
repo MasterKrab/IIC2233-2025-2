@@ -43,7 +43,7 @@ class Client(QThread):
 
             log(f"Received message: {message}")
 
-            if message["type"] == "duplicated-name":
+            if message["type"] == "used-name":
                 self.select_name_answer.emit(False, self.name)
             elif message["type"] == "selected-name":
                 self.name = message["name"]
