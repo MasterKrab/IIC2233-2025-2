@@ -1,5 +1,6 @@
 from socket import socket
 from math import ceil
+from random import shuffle
 from utils.crypto import xor_cipher
 from parametros import CHUNK_SIZE
 import json
@@ -34,6 +35,8 @@ def divide_in_chunks(data: bytes, chunk_size: int) -> list[bytes]:
     if remaing > 0:
         chunks[-1] += b"\x00" * remaing
 
+    shuffle(chunks)
+
     return chunks
 
 
@@ -54,6 +57,8 @@ def receive_message(socket: socket, size: int) -> dict:
         data = chunk[4:]
 
         chunks.append((number, data))
+
+    chunks.sort(key=lambda chunk: chunk[0])
 
     message_bytes = b"".join(chunks[1] for chunks in chunks)
     message = json.loads(message_bytes.decode("UTF-8"))
