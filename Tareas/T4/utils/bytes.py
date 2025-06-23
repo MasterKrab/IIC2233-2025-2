@@ -16,10 +16,6 @@ def receive_bytes(socket: socket, chunk_size: int, amount: int) -> bytes:
 
         answer = socket.recv(chunk_size)[:size]
 
-        if len(answer) < size:
-            # TODO: Handle this case
-            pass
-
         data += answer
 
     return data
@@ -28,14 +24,8 @@ def receive_bytes(socket: socket, chunk_size: int, amount: int) -> bytes:
 def divide_in_chunks(data: bytes, chunk_size: int) -> list[bytes]:
     chunks = [data[i : i + chunk_size] for i in range(0, len(data), chunk_size)]
 
-    remaing = (
-        len(data) % chunk_size if len(data) >= chunk_size else chunk_size - len(data)
-    )
-
-    if remaing > 0:
-        chunks[-1] += b"\x00" * remaing
-
-    shuffle(chunks)
+    while len(chunks[-1]) != chunk_size:
+        chunks[-1] += b"\x00"
 
     return chunks
 
@@ -45,12 +35,8 @@ def receive_message(socket: socket, size: int) -> dict:
 
     chunks = []
 
-    remaing = size + 4 * chunks_amount
-
-    for i in range(chunks_amount):
-        current = min(remaing, CHUNK_SIZE)
-        chunk = xor_cipher(receive_bytes(socket, CHUNK_SIZE, current))
-        remaing -= current
+    for _ in range(chunks_amount):
+        chunk = xor_cipher(receive_bytes(socket, CHUNK_SIZE, CHUNK_SIZE))
 
         number = int.from_bytes(chunk[:4])
 
@@ -58,9 +44,16 @@ def receive_message(socket: socket, size: int) -> dict:
 
         chunks.append((number, data))
 
-    chunks.sort(key=lambda chunk: chunk[0])
+    chunks.sort(key=lambda x: x[0])
+
+    empty_data = chunks_amount * (CHUNK_SIZE - 4) - size
+
+    if empty_data > 0:
+        number, data = chunks[-1]
+        chunks[-1] = (number, data[:-empty_data])
 
     message_bytes = b"".join(chunks[1] for chunks in chunks)
+
     message = json.loads(message_bytes.decode("UTF-8"))
 
     return message
@@ -74,5 +67,7 @@ def create_chunks(message: dict) -> tuple[bytes, list[tuple[int, bytes]]]:
         (i, xor_cipher(b"".join([i.to_bytes(4, "little"), chunk])))
         for i, chunk in enumerate(divide_in_chunks(message_bytes, CHUNK_SIZE - 4))
     ]
+
+    shuffle(chunks)
 
     return message_size, chunks

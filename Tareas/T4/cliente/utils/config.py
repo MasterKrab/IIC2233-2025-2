@@ -14,3 +14,7 @@ def get_api_url():
     port, host = get_webservice_config()
 
     return f"http://{host}:{port}"
+
+
+def get_font():
+    return "Arial"

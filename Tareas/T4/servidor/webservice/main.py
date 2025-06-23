@@ -1,28 +1,35 @@
-import json
-from flask import Flask, Response, request
 from wsgiref.simple_server import make_server
+from flask import Flask, Response, request
+from typing import Callable
+from functools import wraps
+import json
+
 
 from servidor.utils.read_sets import read_sets
-from servidor.database.read import (
+from servidor.database.files import (
     read_users,
     update_users,
     read_games,
     update_games,
     read_user_games,
     update_user_games,
+    generate_game_id,
 )
 from servidor.database.rankings import calculate_rankings
+from servidor.parametros import TOKEN_AUTENTICACION
 from utils.find import find
 from utils.log import log
 from utils.duration import is_valid_duration
-from parametros import RANKINGS
+from parametros import RANKINGS, CUSTOM
+
 
 app = Flask(__name__)
 
 
 def create_answer(data: dict, status_code: int) -> Response:
     """
-    Function "create_answer" extracted doing modifications from "Actividad 8", retrieved on June 14, 2025, from
+    Function "create_answer" extracted doing modifications from "Actividad 8",
+    retrieved on June 14, 2025, from
     https://github.com/IIC2233/Syllabus/tree/main/Actividades/AC8
     """
 
@@ -31,6 +38,27 @@ def create_answer(data: dict, status_code: int) -> Response:
         status=status_code,
         content_type="application/json",
     )
+
+
+def protected(route: Callable) -> Callable:
+    """
+    Function extracted doing modifications from
+    "How to Write a Decorator in Python Flask to Check Logged In Status",
+    retrieved on June 22, 2025, from
+    https://medium.com/geekculture/
+    how-to-write-a-decorator-for-python-flask-to-check-logged-in-status-3689872f6635
+    """
+
+    @wraps(route)
+    def decorated(*args, **kwargs):
+        token = request.headers.get("token")
+
+        if token != TOKEN_AUTENTICACION:
+            return create_answer({"error": "Not allowed"}, 401)
+
+        return route(*args, **kwargs)
+
+    return decorated
 
 
 @app.route("/rankings")
@@ -46,14 +74,14 @@ def get_rankings():
     game_set = request.args.get("conjunto")
 
     if game_set is not None:
-        games_sets = [game_set["name"] for game_set in read_sets()] + ["personalizado"]
+        games_sets = [game_set["name"] for game_set in read_sets()] + [CUSTOM]
 
         if game_set not in games_sets:
             return create_answer({"message": "Invalid game set"}, 400)
 
     amount_text = request.args.get("cantidad")
 
-    if not amount.isdigit():
+    if not amount_text.isdigit():
         return create_answer({"message": "Invalid amount"}, 400)
 
     amount = int(amount_text)
@@ -73,6 +101,7 @@ def sets() -> Response:
 
 
 @app.route("/users")
+@protected
 def get_users() -> Response:
     name = request.args.get("name")
 
@@ -85,8 +114,14 @@ def get_users() -> Response:
 
 
 @app.route("/users", methods=["POST"])
+@protected
 def create_user() -> Response:
-    name = request.args.get("name")
+    name_value = request.args.get("name")
+
+    if name_value is None or not name_value.strip():
+        return create_answer({"message": "Name is required"}, 400)
+
+    name = name_value.strip()
 
     users = read_users()
 
@@ -103,6 +138,7 @@ def create_user() -> Response:
 
 
 @app.route("/users", methods=["PATCH"])
+@protected
 def edit_user() -> Response:
     name = request.args.get("name")
     online = request.args.get("online")
@@ -124,9 +160,20 @@ def edit_user() -> Response:
     return create_answer({"message": "User status changed"}, 200)
 
 
+@app.route("/game-id", methods=["POST"])
+@protected
+def create_game_id() -> Response:
+    return create_answer(
+        {"message": "Game id created successfully", "id": generate_game_id()}, 201
+    )
+
+
 @app.route("/games", methods=["POST"])
+@protected
 def create_game() -> Response:
     body = request.get_json(force=True)
+
+    print(body)
 
     game_id = body.get("id_partida")
     game_set = body.get("nombre_conjunto").strip()
@@ -139,7 +186,7 @@ def create_game() -> Response:
     if players_names - users_names:
         return create_answer({"message": "Invalid users"}, 400)
 
-    games_sets = [game_set["name"] for game_set in read_sets()] + ["personalizado"]
+    games_sets = [game_set["name"] for game_set in read_sets()] + [CUSTOM]
 
     game_set_exists = game_set in games_sets
 
@@ -162,7 +209,12 @@ def create_game() -> Response:
     winner = find(lambda player: player["supervivencia"] == duration, players)
 
     games.append(
-        {"id": game_id, "duration": duration, "game_set": game_set, "winner": winner}
+        {
+            "id": game_id,
+            "duration": duration,
+            "game_set": game_set,
+            "winner": winner["nombre"],
+        }
     )
 
     update_games(games)
@@ -170,6 +222,7 @@ def create_game() -> Response:
     user_games = read_user_games()
 
     user_games.append({"id_partida": game_id, "usuarios": players})
+    print(user_games)
 
     update_user_games(user_games)
 
@@ -179,8 +232,8 @@ def create_game() -> Response:
 def init_webservice(port: int, host: str):
     with make_server(host, port, app) as httpd:
         try:
-            log(f"Iniciando servidor web: http://{host}:{port}")
+            log(f"Starting web server: http://{host}:{port}")
             httpd.serve_forever()
         except KeyboardInterrupt:
-            log("Apagando servidor web")
+            log("Closing web server")
             httpd.shutdown()

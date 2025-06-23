@@ -8,7 +8,6 @@ from servidor.utils.config import get_socket_config, get_webservice_config
 def run_sockets():
     port, host = get_socket_config()
 
-
     server = Server(port, host)
 
     server.run()
@@ -21,11 +20,17 @@ def run_webservice():
 
 
 def main():
-    webservice_thread = Thread(target=run_webservice)
+    webservice_thread = Thread(target=run_webservice, daemon=True)
     webservice_thread.start()
 
-    sockets_thread = Thread(target=run_sockets)
+    sockets_thread = Thread(target=run_sockets, daemon=True)
     sockets_thread.start()
+
+    try:
+        webservice_thread.join()
+        sockets_thread.join()
+    except KeyboardInterrupt:
+        print("Server closing...")
 
 
 if __name__ == "__main__":

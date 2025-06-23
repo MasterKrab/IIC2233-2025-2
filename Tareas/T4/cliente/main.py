@@ -1,11 +1,12 @@
 import sys
-import json
-from pathlib import Path
 from cliente.backend.client import Client
 from cliente.frontend.welcome import WelcomeWindow
 from cliente.frontend.main_window import MainWindow
+from cliente.frontend.game import GameWindow
 from cliente.utils.config import get_socket_config
 from PyQt5.QtWidgets import QApplication, QMessageBox
+
+GameWindow
 
 
 class MainHandler:
@@ -15,10 +16,15 @@ class MainHandler:
         self.welcome_window = WelcomeWindow(x=100, y=100)
         self.welcome_window.submit_name.connect(self.select_name)
 
-        self.main_window = MainWindow()
-        self.welcome_window.open_main_window.connect(self.main_window.show)
+        self.welcome_window.open_main_window.connect(
+            lambda: self.main_window.show_window(self.client.name)
+        )
 
         self.client.select_name_answer.connect(self.welcome_window.handle_name_answer)
+
+        self.main_window = MainWindow()
+        self.main_window.search_game.connect(self.client.search_game)
+        self.client.connect_to_game.connect(self.start_game)
 
     def run(self):
         while True:
@@ -50,6 +56,19 @@ class MainHandler:
 
     def select_name(self, name: str):
         self.client.send_message({"action": "select-name", "name": name})
+
+    def start_game(self):
+        self.main_window.close()
+
+        self.game_window = GameWindow()
+        self.game_window.show()
+        self.client.receive_game_message.connect(self.game_window.receive_game_message)
+        self.game_window.send_typed_word.connect(self.client.send_typed_word)
+        self.game_window.end_game.connect(self.end_game)
+
+    def end_game(self):
+        self.game_window.close()
+        self.main_window.show()
 
 
 def main():

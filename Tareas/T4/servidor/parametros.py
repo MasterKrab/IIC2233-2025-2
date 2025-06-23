@@ -1,5 +1,8 @@
 from pathlib import Path
 
+
+TOKEN_AUTENTICACION = "TcrzH^Nfc28vKnDFxMmv5lL@NuG4iNw7!#H#nn$Cm$I&0UBp$inQlYiKN^HH!6#CuUTZxSW^elG!lx&2UXUfOUbBPvqrQWPl%uhvna7i!HWKCpFQzs@QobEuPgpBG5ij"
+
 SETS_FOLDER = Path("servidor", "dcconjuntos")
 
 DATABASE_FOLDER = Path("servidor", "database")
@@ -8,6 +11,32 @@ USERS_FILE = Path(DATABASE_FOLDER, "usuarios.csv")
 
 GAMES_FILE = Path(DATABASE_FOLDER, "partidas.csv")
 
+GAME_ID_FILE = Path(DATABASE_FOLDER, "id.txt")
+
 USERS_GAMES_FILE = Path(DATABASE_FOLDER, "partidas_usuarios.json")
 
 SERVER_FOLDER = Path("servidor")
+
+TIEMPO_MAXIMO_BUSQUEDA_PARTIDA = 5  # segundos
+
+DIFICULTAD_BASE = 1
+
+INCREMENTO_DIFICULTAD = 1
+
+TIEMPO_INCREMENTO_DIFICULTAD = 1000  # milisegundos
+
+TIEMPO_APARICION_MAXIMO = 5000  # milisegundos
+TIEMPO_APARICION_MINIMO = 1000  # milisegundos
+
+TIEMPO_CAIDA_MAXIMO = 5000  # milisegundos
+
+
+PROBABILIDAD_BLOQUE_HIELO = 0.2
+
+TIEMPO_CONGELACION_BLOQUE_HIELO = 2000  # milisegundos
+
+LARGO_MINIMO_BLOQUE_BRUMA = 10
+
+PROBABILIDAD_BLOQUE_BRUMA = 0.2
+
+TIEMPO_BLOQUEO_BRUMA = 2000  # milisegundos

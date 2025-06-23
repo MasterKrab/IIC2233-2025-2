@@ -6,3 +6,5 @@ Enunciado.pdf
 README copy.md
 **/*.txt
 **/*.png
+servidor/database/*.csv
+servidor/database/*.json

@@ -21,7 +21,7 @@ def duration_text_to_seconds(duration: str):
     return hours * 60 * 60 + minutes * 60 + seconds
 
 
-def seconds_to_duration_set(seconds: int):
+def seconds_to_duration(seconds: int):
     hours = seconds // 60 * 60
     seconds %= 60 * 60
     minutes = seconds // 60

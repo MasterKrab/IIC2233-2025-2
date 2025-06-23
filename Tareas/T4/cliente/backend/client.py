@@ -1,5 +1,6 @@
-import socket
 from PyQt5.QtCore import QThread, pyqtSignal
+import socket
+
 from utils.log import log
 from utils.bytes import receive_bytes, receive_message, create_chunks
 from utils.crypto import xor_cipher
@@ -7,6 +8,8 @@ from utils.crypto import xor_cipher
 
 class Client(QThread):
     select_name_answer = pyqtSignal(bool, str)
+    connect_to_game = pyqtSignal()
+    receive_game_message = pyqtSignal(dict)
 
     def __init__(self, port: int, host: str) -> None:
         super().__init__()
@@ -15,6 +18,7 @@ class Client(QThread):
         self.host = host
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.name = None
+        self.searching_time_start = None
 
     def connect(self) -> dict:
         try:
@@ -43,11 +47,17 @@ class Client(QThread):
 
             log(f"Received message: {message}")
 
-            if message["type"] == "used-name":
+            type = message["type"]
+
+            if type == "used-name":
                 self.select_name_answer.emit(False, self.name)
-            elif message["type"] == "selected-name":
+            elif type == "selected-name":
                 self.name = message["name"]
                 self.select_name_answer.emit(True, self.name)
+            elif type == "game-found":
+                self.connect_to_game.emit()
+            elif type == "game-state":
+                self.receive_game_message.emit(message)
 
     def send_message(self, message: dict) -> None:
         log("Sending message to server")
@@ -61,3 +71,20 @@ class Client(QThread):
         for i, chunk in chunks:
             self.socket.sendall(chunk)
             log(f"Sending chunk {i} to server")
+
+    def search_game(self, game_set: str, words: list[str]) -> None:
+        data = {"action": "search-game", "game_set": game_set}
+
+        if game_set == "personalizado":
+            data["words"] = words
+
+        self.send_message(data)
+
+    def send_typed_word(self, word: str) -> None:
+        self.send_message(
+            {
+                "action": "game",
+                "game-action": "word-typed",
+                "word": word,
+            }
+        )

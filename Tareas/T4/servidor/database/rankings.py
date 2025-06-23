@@ -1,11 +1,11 @@
 from typing import Optional
 
-from servidor.database.read import (
+from servidor.database.files import (
     read_users,
     read_user_games,
     users_games_by_set,
 )
-from utils.duration import duration_text_to_seconds, seconds_to_duration_set
+from utils.duration import duration_text_to_seconds, seconds_to_duration
 from utils.find import find
 from parametros import (
     MINIMO_ENTRADAS_CLASIFICACION,
@@ -36,7 +36,7 @@ def supervivencia_ranking(game_set: Optional[str] = None):
 
     for game in users_games:
         for user_results in game["usuarios"]:
-            user = user_by_name[users["nombre"]]
+            user = user_by_name[user_results["nombre"]]
 
             time = duration_text_to_seconds(user_results["supervivencia"])
 
@@ -44,18 +44,16 @@ def supervivencia_ranking(game_set: Optional[str] = None):
 
     users_data.sort(key=lambda user: user["max_time"], reverse=True)
 
-    return list(
-        map(
-            lambda user: {
-                "name": user["name"],
-                "max_time": seconds_to_duration_set(user["max_time"]),
-            },
-            users_data,
-        )
-    )
+    return [
+        {
+            "nombre": user["name"],
+            "supervivencia-maxima": seconds_to_duration(user["max_time"]),
+        }
+        for user in users_data
+    ]
 
 
-def puntajes_ranking(game_set: str):
+def puntajes_ranking(game_set: Optional[str] = None):
     users = read_users()
 
     users_data = []
@@ -64,7 +62,7 @@ def puntajes_ranking(game_set: str):
     for user in users:
         name = user["name"]
 
-        users_data.append({"name": name, "max_points": 0})
+        users_data.append({"name": name, "puntaje-maximo": 0})
         user_by_name[name] = users_data[-1]
 
     users_games = (
@@ -73,13 +71,21 @@ def puntajes_ranking(game_set: str):
 
     for game in users_games:
         for user_results in game["usuarios"]:
-            user = user_by_name[users["nombre"]]
+            user = user_by_name[user_results["nombre"]]
 
-            user["max_points"] = max(user["max_points"], user_results["puntaje"])
+            user["puntaje-maximo"] = max(
+                user["puntaje-maximo"], user_results["puntaje"]
+            )
 
-    users_data.sort(key=lambda user: user["max_points"], reverse=True)
+    users_data.sort(key=lambda user: user["puntaje-maximo"], reverse=True)
 
-    return users_data
+    return [
+        {
+            "nombre": user["name"],
+            "puntaje-maximo": user["puntaje-maximo"],
+        }
+        for user in users_data
+    ]
 
 
 def addiccion():
@@ -98,13 +104,13 @@ def addiccion():
 
     for game in users_games:
         for user_results in game["usuarios"]:
-            user = user_by_name[users["nombre"]]
+            user = user_by_name[user_results["nombre"]]
 
             user["games"] += 1
 
     users_data.sort(key=lambda user: user["games"], reverse=True)
 
-    return users_data
+    return [{"nombre": user["name"], "partidas": user["games"]} for user in users_data]
 
 
 def victorias():
@@ -131,13 +137,13 @@ def victorias():
             game["usuarios"],
         )
 
-        user_data = user_by_name[user["name"]]
+        user_data = user_by_name[user["nombre"]]
 
         user_data["wins"] += 1
 
     users_data.sort(key=lambda user: user["wins"], reverse=True)
 
-    return users_data
+    return [{"nombre": user["name"], "victorias": user["wins"]} for user in users_data]
 
 
 def calculate_rankings(
@@ -149,13 +155,13 @@ def calculate_rankings(
         raise ValueError("Ranking name is not valid")
 
     if formatted_name == RANKING_SUPERVIVENCIA:
-        return supervivencia_ranking(game_set)[:amount]
+        return supervivencia_ranking()[:amount]
 
     if formatted_name == RANKING_SUPERVIVENCIA_LENGUAJE:
         return supervivencia_ranking(game_set)[:amount]
 
     if formatted_name == RANKING_PUNTAJES:
-        return puntajes_ranking(game_set)[:amount]
+        return puntajes_ranking()[:amount]
 
     if formatted_name == RANKING_PUNTAJES_LENGUAJE:
         return puntajes_ranking(game_set)[:amount]

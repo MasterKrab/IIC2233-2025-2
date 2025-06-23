@@ -28,3 +28,10 @@ def read_sets():
         )
 
     return sets
+
+
+def read_set_words(set_name: str) -> set[str]:
+    with Path(SETS_FOLDER, f"{set_name}.txt").open(encoding="utf-8") as file:
+        lines = file.readlines()
+
+    return set(map(str.strip, lines[1:]))

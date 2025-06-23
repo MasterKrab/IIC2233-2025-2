@@ -1,62 +1,55 @@
+from typing import Self
 from socket import socket
 from queue import Queue
-import threading
+from threading import Thread
 import requests
 import time
 
+from servidor.utils.config import get_api_url
+from servidor.parametros import TOKEN_AUTENTICACION
 from utils.bytes import receive_bytes, receive_message, create_chunks
 from utils.crypto import xor_cipher
 from utils.log import log
-from servidor.utils.config import get_api_url
+from parametros import MINIMO_PALABRAS_CONJUNTO, CUSTOM
 
 
-class UserThread(threading.Thread):
-    def __init__(self, id: int, socket: socket) -> None:
-        super().__init__()
+class UserThread(Thread):
+    def __init__(
+        self,
+        id: int,
+        socket: socket,
+        game_sets: list[str],
+        searching_game_queue: Queue[Self, str],
+    ) -> None:
+        super().__init__(daemon=True)
 
         self.id = id
         self.name = None
         self.socket = socket
         self.is_connected = True
+        self.is_searching_game = False
+        self.game_sets = game_sets
+        self.game_actions_queue = None
+        self.custom_words = []
 
         self.daemon = True
 
+        self.searching_game_queue = searching_game_queue
+
         self.pending_messages = Queue()
 
-        self.pending_messages_thread = threading.Thread(
-            target=self.send_messages, daemon=True
-        )
+        self.pending_messages_thread = Thread(target=self.send_messages, daemon=True)
 
-        self.check_connection_thread = threading.Thread(
-            target=self.check_connection, daemon=True
-        )
+        self.check_connection_thread = Thread(target=self.check_connection, daemon=True)
 
     def check_connection(self):
         while self.is_connected:
             time.sleep(5)
-
-            try:
-                size, chunks = create_chunks({"type": "check-connection"})
-
-                self.socket.sendall(size)
-
-                for i, chunk in chunks:
-                    self.socket.sendall(chunk)
-
-            except BrokenPipeError:
-                log(f"(User {self.id}) broken pipe error.")
-                self.disconnect()
-                break
-            except Exception as error:
-                log(f"Error user {self.id}: {error}")
-                self.disconnect()
-                break
+            self.pending_messages.put({"type": "check-connection"})
 
     def send_messages(self):
         while self.is_connected:
             message = self.pending_messages.get()
-
-            log(f"(User {self.id}): Sending message")
 
             try:
                 size, chunks = create_chunks(message)
@@ -65,7 +58,6 @@ class UserThread(threading.Thread):
 
                 for i, chunk in chunks:
                     self.socket.sendall(chunk)
-                    log(f"Sending chunk {i} to user {self.id}")
 
                 self.pending_messages.task_done()
 
@@ -99,32 +91,84 @@ class UserThread(threading.Thread):
                 self.disconnect()
                 break
 
-            try:
-                message = receive_message(self.socket, size)
+            message = receive_message(self.socket, size)
 
-                self.process_message(message)
-
-            except Exception as error:
-                log(f"(User {self.id}): Sending message error {error}")
-                break
+            self.process_message(message)
 
         self.disconnect()
 
     def process_message(self, message: dict) -> None:
-        print(message)
-        if message["action"] == "select-name":
-            self.select_name(message["name"].strip())
+        try:
+            if message["action"] == "select-name":
+                if not message["name"].strip():
+                    self.pending_messages.put(
+                        {
+                            "ok": False,
+                            "type": "error",
+                            "message": "Name is required",
+                        }
+                    )
+                    return
+
+                self.select_name(message["name"].strip())
+
+            elif message["action"] == "search-game":
+                game_set = message["game_set"].strip()
+
+                # Get words for personalized game set
+                words = message["words"] if game_set == CUSTOM else None
+
+                if words is not None and len(words) < MINIMO_PALABRAS_CONJUNTO:
+                    self.pending_messages.put(
+                        {
+                            "ok": False,
+                            "type": "error",
+                            "message": f"Game set must have >= {MINIMO_PALABRAS_CONJUNTO} words",
+                        }
+                    )
+                    return
+
+                self.search_game(message["game_set"].strip(), words)
+            elif message["action"] == "game":
+                if self.game_actions_queue is None:
+                    self.pending_messages.put(
+                        {
+                            "ok": False,
+                            "type": "error",
+                            "message": "User is not in a game",
+                        }
+                    )
+                    return
+
+                self.game_actions_queue.put(
+                    {
+                        **message,
+                        "user-id": self.id,
+                    }
+                )
+        except KeyError as error:
+            log(f"(User {self.id}): KeyError {error}")
+
+            self.pending_messages.put(
+                {
+                    "ok": False,
+                    "type": "error",
+                    "message": "Invalid message data",
+                }
+            )
 
     def select_name(self, name: str) -> None:
         response = requests.get(
             f"{get_api_url()}/users",
             params={"name": name, "online": True},
+            headers={"token": TOKEN_AUTENTICACION},
         )
 
         if response.status_code == 404:
             requests.post(
                 f"{get_api_url()}/users",
                 params={"name": name},
+                headers={"token": TOKEN_AUTENTICACION},
             )
 
         if response.status_code == 200:
@@ -144,6 +188,7 @@ class UserThread(threading.Thread):
             requests.patch(
                 f"{get_api_url()}/users",
                 params={"name": name, "online": True},
+                headers={"token": TOKEN_AUTENTICACION},
             )
 
         self.name = name
@@ -156,17 +201,44 @@ class UserThread(threading.Thread):
             }
         )
 
+    def search_game(self, game_set: str, words: list[str] | None) -> None:
+        if self.is_searching_game:
+            self.pending_messages.put(
+                {
+                    "ok": False,
+                    "type": "error",
+                    "message": "Already searching for a game",
+                }
+            )
+            return
+
+        if game_set not in self.game_sets:
+            self.pending_messages.put(
+                {
+                    "ok": False,
+                    "type": "error",
+                    "message": f"Invalid game set: {game_set}",
+                }
+            )
+
+        self.searching_game_queue.put((self, game_set))
+
+        self.is_searching_game = True
+        self.custom_words = words if game_set == CUSTOM else []
+
+        self.pending_messages.put(
+            {
+                "ok": True,
+                "type": "searching-game",
+                "message": f"Searching game with game set: {game_set}",
+            }
+        )
+
     def disconnect(self) -> None:
         if not self.is_connected:
             return
 
-        log(f"(User {self.id}): Disconnecting")
-
         self.is_connected = False
-
         self.socket.close()
 
-        if self.name is not None:
-            requests.patch(
-                f"{get_api_url()}/users", params={"name": self.name, "online": False}
-            )
+        log(f"(User {self.id}): Socket closed")

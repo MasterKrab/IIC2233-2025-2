@@ -1,4 +1,3 @@
-from typing import Optional
 from PyQt5.QtWidgets import (
     QWidget,
     QVBoxLayout,
@@ -6,10 +5,10 @@ from PyQt5.QtWidgets import (
     QLabel,
     QPushButton,
     QLineEdit,
+    QMessageBox,
 )
 from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QMessageBox
 
 
 class WelcomeWindow(QWidget):
@@ -59,9 +58,15 @@ class WelcomeWindow(QWidget):
 
     def submit(self) -> None:
         name = self.name_input.text().strip()
+
+        if not name:
+            return
+
+        self.button.setEnabled(False)
         self.submit_name.emit(name)
 
     def handle_name_answer(self, ok: bool, name: str):
+
         if ok:
             QMessageBox.information(
                 self,
@@ -78,3 +83,4 @@ class WelcomeWindow(QWidget):
                 "Error",
                 "El nombre ya esta usado, elije otro.",
             )
+            self.button.setEnabled(True)
