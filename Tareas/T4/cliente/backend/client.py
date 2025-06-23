@@ -4,6 +4,7 @@ import socket
 from utils.log import log
 from utils.bytes import receive_bytes, receive_message, create_chunks
 from utils.crypto import xor_cipher
+from parametros import CUSTOM
 
 
 class Client(QThread):
@@ -75,7 +76,7 @@ class Client(QThread):
     def search_game(self, game_set: str, words: list[str]) -> None:
         data = {"action": "search-game", "game_set": game_set}
 
-        if game_set == "personalizado":
+        if game_set == CUSTOM:
             data["words"] = words
 
         self.send_message(data)
