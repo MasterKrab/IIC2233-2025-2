@@ -29,7 +29,7 @@ class RankingsTable(QTableWidget):
         self.setFixedHeight(400)
 
     def update(self, data: list) -> None:
-        headers = [key for key in data[0].keys()]
+        headers = [key for key in data[0].keys()] if data else []
         pretty_headers = [pretty(header) for header in headers]
 
         self.setColumnCount(len(headers))
