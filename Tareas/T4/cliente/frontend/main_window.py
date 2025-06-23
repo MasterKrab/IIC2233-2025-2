@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QFont
+from time import time
 from pathlib import Path
 
 from parametros import MINIMO_PALABRAS_CONJUNTO
@@ -102,7 +103,7 @@ class MainWindow(QWidget):
 
         self.button_search_game.setEnabled(False)
         self.drop_down_game_set.setEnabled(False)
-        self.timer.start()
+        self.timer.start(time())
 
     def import_game_set(self):
         dialog = QFileDialog(self)
@@ -152,3 +153,14 @@ class MainWindow(QWidget):
             "Conjunto importado",
             f"Conjunto {name} importado correctamente",
         )
+
+    def close(self) -> None:
+        self.is_searching_game = False
+        self.button_search_game.setEnabled(True)
+        self.drop_down_game_set.setEnabled(True)
+
+        self.timer.stop()
+        self.search_game_label.setText(
+            "Elije un conjunto de palabras para buscar una partida"
+        )
+        super().close()

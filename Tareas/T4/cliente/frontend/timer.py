@@ -20,13 +20,11 @@ class Timer(QWidget):
 
         self.timer = QTimer(self)
         self.text = text
-        self.start_time = time()
 
         self.timer.timeout.connect(self.showTime)
 
-    def start(self, interval: int = 1000) -> None:
-
-        self.start_time = time()
+    def start(self, start_time: int, interval: int = 1000) -> None:
+        self.start_time = start_time
         self.timer.start(interval)
 
     def showTime(self):
@@ -34,3 +32,7 @@ class Timer(QWidget):
         text = self.text.format(seconds_to_duration(int(current_time)))
 
         self.label.setText(text)
+
+    def stop(self) -> None:
+        self.timer.stop()
+        self.label.setText("")
