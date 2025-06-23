@@ -61,6 +61,11 @@ def protected(route: Callable) -> Callable:
     return decorated
 
 
+@app.route("/check")
+def check() -> Response:
+    return create_answer({"message": "Web service is working!"}, 200)
+
+
 @app.route("/rankings")
 def get_rankings():
     name = request.args.get("nombre")

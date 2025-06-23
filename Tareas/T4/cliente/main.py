@@ -1,12 +1,13 @@
+from PyQt5.QtWidgets import QApplication, QMessageBox
+import requests
 import sys
+
+
 from cliente.backend.client import Client
 from cliente.frontend.welcome import WelcomeWindow
 from cliente.frontend.main_window import MainWindow
 from cliente.frontend.game import GameWindow
-from cliente.utils.config import get_socket_config
-from PyQt5.QtWidgets import QApplication, QMessageBox
-
-GameWindow
+from cliente.utils.config import get_socket_config, get_api_url
 
 
 class MainHandler:
@@ -22,15 +23,19 @@ class MainHandler:
 
         self.client.select_name_answer.connect(self.welcome_window.handle_name_answer)
 
-        self.main_window = MainWindow()
-        self.main_window.search_game.connect(self.client.search_game)
         self.client.connect_to_game.connect(self.start_game)
 
     def run(self):
         while True:
-            is_connected = self.client.connect()["ok"]
+            is_socket_connected = self.client.connect()["ok"]
 
-            if not is_connected:
+            try:
+                requests.get(f"{get_api_url()}/check")
+                is_webservice_connected = True
+            except requests.ConnectionError:
+                is_webservice_connected = False
+
+            if not is_webservice_connected or not is_socket_connected:
                 QMessageBox.critical(
                     self.welcome_window,
                     "Error",
@@ -50,6 +55,9 @@ class MainHandler:
                 continue
 
             break
+
+        self.main_window = MainWindow()
+        self.main_window.search_game.connect(self.client.search_game)
 
         self.client.start()
         self.welcome_window.show()
