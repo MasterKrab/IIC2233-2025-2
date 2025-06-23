@@ -62,6 +62,14 @@ class WelcomeWindow(QWidget):
         if not name:
             return
 
+        if "," in name or "\n" in name:
+            QMessageBox.critical(
+                self,
+                "Error",
+                "El nombre no puede tener comas ni saltos de línea.",
+            )
+            return
+
         self.button.setEnabled(False)
         self.submit_name.emit(name)
 

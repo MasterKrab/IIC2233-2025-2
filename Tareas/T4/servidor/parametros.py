@@ -17,7 +17,7 @@ USERS_GAMES_FILE = Path(DATABASE_FOLDER, "partidas_usuarios.json")
 
 SERVER_FOLDER = Path("servidor")
 
-TIEMPO_MAXIMO_BUSQUEDA_PARTIDA = 5  # segundos
+TIEMPO_MAXIMO_BUSQUEDA_PARTIDA = 10  # segundos
 
 DIFICULTAD_BASE = 1
 

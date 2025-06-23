@@ -100,7 +100,9 @@ class UserThread(Thread):
     def process_message(self, message: dict) -> None:
         try:
             if message["action"] == "select-name":
-                if not message["name"].strip():
+                name = message["name"].strip()
+
+                if not name:
                     self.pending_messages.put(
                         {
                             "ok": False,
@@ -110,7 +112,17 @@ class UserThread(Thread):
                     )
                     return
 
-                self.select_name(message["name"].strip())
+                if "," in name or "\n" in name:
+                    self.pending_messages.put(
+                        {
+                            "ok": False,
+                            "type": "error",
+                            "message": "Invalid name",
+                        }
+                    )
+                    return
+
+                self.select_name(name)
 
             elif message["action"] == "search-game":
                 game_set = message["game_set"].strip()

@@ -54,6 +54,7 @@ class Game(Thread):
 
         for user_thread in users:
             self.users[user_thread.id] = {
+                "name": user_thread.name,
                 "thread": user_thread,
                 "score": 0,
                 "streak": 0,
@@ -300,11 +301,19 @@ class Game(Thread):
         game_state = {
             "type": "game-state",
             "action": "state",
-            "server-time": self.current_time,
-            "dificulty": self.dificulty,
+            "name": user["name"],
             "streak": user["streak"],
             "score": user["score"],
             "lives": user["lives"],
+            "players": [
+                {
+                    "name": user["name"],
+                    "score": user["score"],
+                    "lives": user["lives"],
+                    "streak": user["streak"],
+                }
+                for user in self.users.values()
+            ],
         }
 
         user_thread.pending_messages.put(game_state)

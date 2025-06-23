@@ -1,6 +1,14 @@
 from pathlib import Path
 from time import time
-from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QMessageBox
+from PyQt5.QtWidgets import (
+    QWidget,
+    QLabel,
+    QLineEdit,
+    QGridLayout,
+    QMessageBox,
+    QTableWidget,
+    QTableWidgetItem,
+)
 from PyQt5.QtCore import Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import QFont, QPixmap
 
@@ -22,9 +30,22 @@ class Word(QWidget):
     ) -> None:
         super().__init__(parent)
 
-        self.pixmap = QPixmap(
-            str(Path(SPRITES_PATH, "bloque-normal.png"))
-        ).scaledToHeight(25)
+        self.setStyleSheet("border: none")
+
+        self.label = QLabel(text, self)
+        self.label.setFont(QFont(get_font(), 20))
+        self.label.setGeometry(0, 0, self.width(), self.height())
+        self.label.setAlignment(Qt.AlignCenter)
+        self.label.setStyleSheet("color: white")
+
+        self.padding = 25
+
+        self.pixmap = QPixmap(str(Path(SPRITES_PATH, "bloque-normal.png"))).scaled(
+            self.label.width() + 2 * self.padding,
+            self.label.height() + 2 * self.padding,
+            Qt.KeepAspectRatio,
+            Qt.SmoothTransformation,
+        )
 
         self.label_pixmap = QLabel(self)
         self.label_pixmap.setGeometry(0, 0, self.pixmap.width(), self.pixmap.height())
@@ -39,7 +60,7 @@ class Word(QWidget):
         self.text = text
         self.start_time = start_time
         self.fall_time = fall_time
-        self.position_x = x
+        self.position_x = min(parent.width() - self.pixmap.width(), x)
         self.position_y = y
         self.start_y = y
         self.window_height = window_height
@@ -63,6 +84,41 @@ class Word(QWidget):
         self.move(self.position_x, self.position_y)
 
 
+class PlayersTable(QTableWidget):
+    def __init__(
+        self,
+    ) -> None:
+        super().__init__()
+
+        self.setFont(QFont(get_font(), 12))
+        self.setEditTriggers(QTableWidget.NoEditTriggers)
+
+        self.setColumnCount(4)
+        self.setHorizontalHeaderLabels(["Nombre", "Puntaje", "Vidas", "Racha"])
+
+    def update_data(self, players: list[dict], name: str) -> None:
+        players.sort(
+            key=lambda x: (x["score"], x["lives"], x["streak"]),
+            reverse=True,
+        )
+
+        self.setRowCount(len(players))
+
+        for row, participant in enumerate(players):
+            name_item = QTableWidgetItem(participant["name"])
+
+            if participant["name"] == name:
+                name_item.setFont(QFont(get_font(), 12, QFont.Bold))
+
+            self.setItem(row, 0, name_item)
+            self.setItem(row, 1, QTableWidgetItem(f"{participant['score']:.2f}"))
+            self.setItem(row, 2, QTableWidgetItem(str(participant["lives"])))
+            self.setItem(row, 3, QTableWidgetItem(str(participant["streak"])))
+
+        self.resizeColumnsToContents()
+        self.resizeRowsToContents()
+
+
 class GameWindow(QWidget):
     send_typed_word = pyqtSignal(str)
     end_game = pyqtSignal()
@@ -72,52 +128,68 @@ class GameWindow(QWidget):
     ) -> None:
         super().__init__()
         self.setWindowTitle(title)
-        self.setGeometry(x, y, 1000, 700)
-        self.setFixedSize(self.width(), self.height())
+
+        self.setGeometry(self.screen().geometry())
+        self.showFullScreen()
 
         self.lives = VIDAS_INICIALES
-        self.points = 0
+        self.score = 0
+        self.streak = 0
+        self.name = ""
         self.is_running = True
-
+        self.horizontal_offset = 0
         self.words_labels = []
 
         self.update_timer = QTimer(self)
         self.update_timer.timeout.connect(self.update_game)
         self.update_timer.start(30)
 
-        self.horizontal_offset = 100
-        self.words_width = self.width() - 2 * self.horizontal_offset
-
-        self.top_bar_height = 50
-
-        self.words_height = self.height() - self.top_bar_height
-
-        self.current_word = QLineEdit(self)
+        self.current_word = QLineEdit()
         self.current_word.setAlignment(Qt.AlignCenter)
         self.current_word.setStyleSheet("border: none; background: transparent")
 
         self.current_word.setFont(QFont(get_font(), 16))
-        self.current_word.setGeometry(
-            int(self.width() / 4), 0, int(self.width() / 2), self.top_bar_height
-        )
         self.current_word.setPlaceholderText("Escribe aquí")
         self.current_word.returnPressed.connect(self.type_current_word)
+        self.current_word.setFont(QFont(get_font(), 20))
 
         self.current_word.show()
 
-        self.lives_label = QLabel(f"Vidas: {VIDAS_INICIALES}", self)
-        self.lives_label.setAlignment(Qt.AlignCenter)
-        self.lives_label.setGeometry(0, 0, int(self.width() / 4), self.top_bar_height)
-        self.lives_label.setFont(QFont(get_font(), 16))
-        self.lives_label.show()
+        self.stats_label = QLabel()
+        self.stats_label.setFont(QFont(get_font(), 14))
+        self.update_stats()
 
-        self.score_label = QLabel("Puntaje: 0", self)
-        self.score_label.setAlignment(Qt.AlignCenter)
-        self.score_label.setGeometry(
-            int(3 * self.width() / 4), 0, int(self.width() / 4), self.top_bar_height
+        self.players_table = PlayersTable()
+
+        self.words_panel = QWidget()
+        self.words_panel.setStyleSheet(
+            "border-top: 2px solid; border-bottom: 2px solid;"
         )
-        self.score_label.setFont(QFont(get_font(), 16))
-        self.score_label.show()
+
+        self.layout = QGridLayout()
+
+        self.layout.addWidget(self.stats_label, 0, 0, 1, 1)
+        self.layout.addWidget(self.players_table, 1, 0, 1, 1)
+        self.layout.addWidget(self.current_word, 0, 1, 1, 3)
+        self.layout.addWidget(self.words_panel, 1, 1, 2, 2)
+
+        self.layout.setRowStretch(0, 1)
+        self.layout.setRowStretch(1, 6)
+
+        self.layout.setColumnStretch(0, 2)
+        self.layout.setColumnStretch(1, 5)
+
+        self.setLayout(self.layout)
+
+    def update_stats(self) -> None:
+        lines = [
+            f"Jugador: {self.name}",
+            f"Vidas: {self.lives}",
+            f"Puntaje: {self.score:.2f}",
+            f"Racha: {self.streak}",
+        ]
+
+        self.stats_label.setText("\n".join(lines))
 
     def type_current_word(self) -> None:
         text = self.current_word.text().strip()
@@ -132,6 +204,8 @@ class GameWindow(QWidget):
         if not self.is_running:
             return
 
+        self.current_word.setFocus()
+
         for label in self.words_labels:
             label.update()
 
@@ -142,31 +216,34 @@ class GameWindow(QWidget):
             return
 
         if action == "state":
+            self.name = message["name"]
             self.lives = message["lives"]
             self.score = message["score"]
+            self.streak = message["streak"]
+            self.players = message["players"]
 
-            self.lives_label.setText(f"Vidas: {self.lives}")
-            self.score_label.setText(f"Puntaje: {self.score:.2f}")
+            self.update_stats()
+            self.players_table.update_data(self.players, self.name)
         elif action == "new-word":
             word = message["word"]
 
             text = word["word"]
 
-            position_x = (
-                int(word["horizontal-position"] * self.words_width)
-                + self.horizontal_offset
+            position_x = int(
+                word["horizontal-position"]
+                * (self.words_panel.width() - self.horizontal_offset)
             )
             start_time = word["start-time"]
             fall_time = word["fall-time"]
 
             label = Word(
-                self,
+                self.words_panel,
                 text,
                 start_time,
                 fall_time,
-                self.words_height,
+                self.words_panel.height(),
                 position_x,
-                self.top_bar_height,
+                0,
             )
 
             self.words_labels.append(label)

@@ -128,6 +128,9 @@ def create_user() -> Response:
 
     name = name_value.strip()
 
+    if "," in name or "\n" in name:
+        return create_answer({"message": "Invalid name"}, 400)
+
     users = read_users()
 
     already_exists = name in [user["name"] for user in users]
