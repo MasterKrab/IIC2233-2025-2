@@ -2,7 +2,7 @@
 
 ## Consideraciones generales :octocat:
 
-En proceso...
+Esta todo implementado lo del enunciado de la tarea, excepto los bloques de hielo y bruma.
 
 ## Ejecución :computer:
 
